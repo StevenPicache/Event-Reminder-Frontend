@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store/store';
 import { User, LoginData } from '../types/user'
 import LoginService from '../service/LoginService';
-import { log } from 'console';
 
 const path = 'login/LoginUser';
 

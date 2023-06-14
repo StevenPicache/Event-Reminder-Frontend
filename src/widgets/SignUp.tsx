@@ -9,13 +9,13 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import InputBoxComponent from '../common_components/input_box.tsx';
+import InputBoxComponent from '../common_components/input_box';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import { addUser, login } from '../slice/user.ts';
-import { User, LoginData } from '../types/user.ts';
-import { useAppDispatch, useAppSelector } from '../hooks.ts'
+import { addUser, login } from '../slice/user';
+import { User, LoginData } from '../types/user';
+import { useAppDispatch, useAppSelector } from '../hooks'
 
 
 const defaultTheme = createTheme();
@@ -126,6 +126,7 @@ export default function SignUp() {
 
         dispatch(addUser(user));
         dispatch(login(loginData));
+
 
     };
 
