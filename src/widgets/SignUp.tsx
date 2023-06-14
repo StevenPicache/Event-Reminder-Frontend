@@ -124,7 +124,7 @@ export default function SignUp() {
             password: data.get('password')
         } as LoginData
 
-        dispatch(addUser(user));
+        // dispatch(addUser(user));
         dispatch(login(loginData));
 
 

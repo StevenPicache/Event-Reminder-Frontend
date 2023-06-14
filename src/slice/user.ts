@@ -9,7 +9,6 @@ const path = 'login/LoginUser';
 export const login = createAsyncThunk(
   path,
   async ({email , password} : LoginData) => {
-    console.log('REACHED THE THUNK');
     const response = await LoginService.loginUser(email, password);
     return response;
   }
@@ -33,6 +32,7 @@ export const userSlice = createSlice({
   initialState: initialState,
   reducers: {
     addUser: (state, action: PayloadAction<User>) => {
+      console.log('loading', state.loading)
       state.user.firstName = action.payload.firstName
       state.user.lastName = action.payload.lastName
       state.user.password = action.payload.password
@@ -41,21 +41,19 @@ export const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+
+    // builder.addCase(login.)
     builder.addCase(login.fulfilled, (state,action) => {
-
-
       console.log('FULLFILLED')
-
-
       state.loading = false
-      console.log(action.payload)
-      console.log(action.payload)
-      // DO SOMETHING WITH THE RETURNED DATA
+      console.log('loading pending', state.loading)
     })
 
     builder.addCase(login.pending, (state) => {
       state.loading = true
-    })
+    
+      console.log('loading pending', state.loading)})
+
 
     builder.addCase(login.rejected, (state) => {
       state.loading = false
