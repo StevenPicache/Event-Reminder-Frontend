@@ -5,16 +5,16 @@ import Grid from '@mui/material/Grid';
 interface InputBoxData {
     autocomplete: string;
     xs: number;
-    sm?: number;
     name: string;
     label: string;
     value: string;
+    autofocus?: boolean;
     setValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function InputBoxComponent({ autocomplete, xs, sm, name, label, value, setValue }: InputBoxData) {
+export default function InputBoxComponent({ autocomplete, xs, name, label, value, autofocus, setValue }: InputBoxData) {
     return (
-        <Grid item xs={xs} sm={sm ?? 0}>
+        <Grid item xs={xs} >
             <TextField
                 autoComplete={autocomplete}
                 name={name}
@@ -24,7 +24,7 @@ export default function InputBoxComponent({ autocomplete, xs, sm, name, label, v
                 label={label}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                autoFocus
+                autoFocus={autofocus}
             />
         </Grid>
     )

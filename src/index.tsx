@@ -1,13 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+
+
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { RoutePaths } from './constants/routes';
+
+import App from './App';
+import MainPage from './view/MainPage';
+import Events from './widgets/Events';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path={RoutePaths.default} Component={App} />
+        <Route path={RoutePaths.Main} Component={MainPage} />
+        <Route path={RoutePaths.Events} Component={Events} />
+
+
+      </Routes>
+
+    </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -10,12 +8,14 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import InputBoxComponent from '../common_components/input_box';
-
+import { login } from '../slice/user';
+import { LoginData } from '../types/user';
+import MainPage from '../view/MainPage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import { addUser, login } from '../slice/user';
-import { User, LoginData } from '../types/user';
 import { useAppDispatch, useAppSelector } from '../hooks'
+import { useNavigate } from 'react-router-dom';
+import { RoutePaths } from '../constants/routes';
 
 
 const defaultTheme = createTheme();
@@ -40,11 +40,7 @@ function SignUpView({ label }: Label) {
 function TitleAndHeader({ label }: Label) {
     return (
         <>
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                {/* <LockOutlinedIcon />  */}
-                {/* replace with jia icons  */}
-            </Avatar>
-
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
             <Typography component="h1" variant="h5">
 
                 {label}
@@ -53,18 +49,6 @@ function TitleAndHeader({ label }: Label) {
     )
 }
 
-function AgreeToRecievePromotions({ label }: Label) {
-    return (
-
-        <Grid item xs={12}>
-            <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label={label}
-
-            />
-        </Grid>
-    )
-}
 
 
 function SubmitButton({ label }: Label) {
@@ -82,52 +66,30 @@ function SubmitButton({ label }: Label) {
 }
 
 
-function AlreadyHaveAnAccount({ label }: Label) {
-    return (
-        <Grid container justifyContent="flex-end">
-            <Grid item>
-                <Link href="#" variant="body2">
-                    {label}
-
-                </Link>
-            </Grid>
-        </Grid>
-    )
+interface State {
+    state: boolean
 }
-
-
-
-export default function SignUp() {
+function SignInForm(state: State) {
     const dispatch = useAppDispatch();
-    const testName = useAppSelector((state) => state.userReducer.user.firstName)
+    const navigation = useNavigate();
 
-
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const user = {
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            password: data.get('password'),
-            email: data.get('email')
-        } as User
-
         const loginData = {
             email: data.get('email'),
             password: data.get('password')
         } as LoginData
 
-        // dispatch(addUser(user));
+        console.log(loginData)
         dispatch(login(loginData));
 
-
+        if (state) {
+            navigation(RoutePaths.Main);
+        }
     };
 
 
@@ -142,22 +104,31 @@ export default function SignUp() {
                         flexDirection: 'column',
                         alignItems: 'center'
                     }}>
-                    <TitleAndHeader label="Sign up" />
+                    <TitleAndHeader label="Sign In" />
+
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <InputBoxComponent autocomplete="given-name" xs={12} sm={6} name="firstName" label="First Name" value={firstName} setValue={setFirstName} />
-                            <InputBoxComponent autocomplete="family-name" xs={12} sm={6} name="lastName" label="Last Name" value={lastName} setValue={setLastName} />
-                            <InputBoxComponent autocomplete="email" xs={12} name="email" label="Email Address" value={email} setValue={setEmail} />
+                            <InputBoxComponent autocomplete="email" xs={12} name="email" label="Email Address" value={email} setValue={setEmail} autofocus={true} />
                             <InputBoxComponent autocomplete="new-password" xs={12} name="password" label="Password" value={password} setValue={setPassword} />
-
                         </Grid>
-                        <AgreeToRecievePromotions label="I want to receive inspiration, marketing promotions and updates via email." />
-                        <SubmitButton label="Sign Up" />
-                        <AlreadyHaveAnAccount label="Already have an account? Sign in" />
+                        <SubmitButton label="Sign In" />
                     </Box>
                 </Box>
                 <SignUpView label='Your Website' />
             </Container>
         </ThemeProvider>
+    );
+}
+
+
+export default function SignInMain() {
+    const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
+    console.log('Updating')
+    if (isAuthenticated) {
+        return (<MainPage />)
+    }
+
+    return (
+        <SignInForm state={isAuthenticated} />
     );
 }
