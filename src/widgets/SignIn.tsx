@@ -8,14 +8,15 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import InputBoxComponent from '../common_components/input_box';
-import { login } from '../slice/user';
-import { LoginData } from '../types/user';
+import { LoginData, User } from '../types/user';
 import MainPage from '../view/MainPage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { useNavigate } from 'react-router-dom';
 import { RoutePaths } from '../constants/routes';
+import { useLoginUserMutation } from '../store/endpoint/login';
+import { setCredentials } from '../store/slice/user';
 
 
 const defaultTheme = createTheme();
@@ -51,15 +52,16 @@ function TitleAndHeader({ label }: Label) {
 
 
 
-function SubmitButton({ label }: Label) {
+function SubmitButton(props: { label: string, disabled: boolean }) {
     return (
         <Button
+            disabled={props.disabled}
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
         >
-            {label}
+            {props.label}
 
         </Button>
     )
@@ -69,27 +71,40 @@ function SubmitButton({ label }: Label) {
 interface State {
     state: boolean
 }
+interface FormData {
+    email: string,
+    password: string
+}
+
 function SignInForm(state: State) {
     const dispatch = useAppDispatch();
     const navigation = useNavigate();
+    const [login, { isSuccess, isLoading, isError }] = useLoginUserMutation()
+
+
+    // const [data, setData] = useState<FormData>({ email: '', password: '' });
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const loginData = {
+        const loginData: LoginData = {
             email: data.get('email'),
             password: data.get('password')
         } as LoginData
 
-        console.log(loginData)
-        dispatch(login(loginData));
-
-        if (state) {
-            navigation(RoutePaths.Main);
-        }
+        const test = await login(loginData).unwrap();
+        dispatch(setCredentials({
+            email: loginData.email,
+            password: loginData.password,
+            token: test.token
+        } as User))
+        // if (isSuccess && test != null) {
+        //     navigation(RoutePaths.Main);
+        // }
     };
 
 
@@ -111,7 +126,7 @@ function SignInForm(state: State) {
                             <InputBoxComponent autocomplete="email" xs={12} name="email" label="Email Address" value={email} setValue={setEmail} autofocus={true} />
                             <InputBoxComponent autocomplete="new-password" xs={12} name="password" label="Password" value={password} setValue={setPassword} />
                         </Grid>
-                        <SubmitButton label="Sign In" />
+                        <SubmitButton label="Sign In" disabled={isLoading} />
                     </Box>
                 </Box>
                 <SignUpView label='Your Website' />
@@ -124,11 +139,13 @@ function SignInForm(state: State) {
 export default function SignInMain() {
     const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
     console.log('Updating')
-    if (isAuthenticated) {
-        return (<MainPage />)
-    }
+    // if (isAuthenticated) {
+    //     return (<MainPage />)
+    // }
 
     return (
         <SignInForm state={isAuthenticated} />
     );
 }
+
+

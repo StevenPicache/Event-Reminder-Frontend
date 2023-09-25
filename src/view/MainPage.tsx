@@ -130,15 +130,15 @@ function OrdersWidget() {
         </Grid>
     )
 }
-export default function MainPage() {
+
+function LeftSideDrawerWidget() {
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
+        <>
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
@@ -195,7 +195,13 @@ export default function MainPage() {
                     {secondaryListItems}
                 </List>
             </Drawer>
-
+        </>
+    )
+}
+function MainPage() {
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <LeftSideDrawerWidget />
             <Box
                 component="main"
                 sx={{
@@ -211,7 +217,6 @@ export default function MainPage() {
                 <Toolbar />
                 <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                     <Grid container spacing={3}>
-                        {/* Chart */}
                         <DashBoardWidget />
                         <RecentDeposit />
                         <OrdersWidget />
@@ -224,3 +229,4 @@ export default function MainPage() {
     );
 }
 
+export default MainPage()
