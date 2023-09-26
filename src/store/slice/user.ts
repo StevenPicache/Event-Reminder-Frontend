@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { LoginData, User } from '../../types/user'
-
+import { User } from '../../types/user'
+import { loginApi } from '../endpoint/login'
 const user: User = {
   email: '',
   password: '',
@@ -23,6 +23,19 @@ export const userSlice = createSlice({
       state.user.password = action.payload.password
       state.user.token = action.payload.token
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      loginApi.endpoints.loginUser.matchFulfilled,
+      (state, action) => {
+        console.log('Extra reducer')
+        const { isAuthenticated, token } = action.payload
+        if (token != '') {
+          state.isAuthenticated = isAuthenticated
+          state.user.token = token
+        }
+      },
+    )
   },
 })
 

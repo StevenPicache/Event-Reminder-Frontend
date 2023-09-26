@@ -20,8 +20,6 @@ root.render(
         <Route path={RoutePaths.default} Component={App} />
         <Route path={RoutePaths.Main} Component={MainPage} />
         <Route path={RoutePaths.Events} Component={Events} />
-
-
       </Routes>
 
     </BrowserRouter>

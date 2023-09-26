@@ -4,7 +4,7 @@ import { store } from './store/store'
 import SignInView from './widgets/SignIn';
 import React from 'react';
 
-function App() {
+export default function App() {
 
   return (
     <Provider store={store}>
@@ -16,4 +16,3 @@ function App() {
   );
 }
 
-export default App;

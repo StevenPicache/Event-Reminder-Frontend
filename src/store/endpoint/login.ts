@@ -11,7 +11,7 @@ export interface LoginResponse {
   token: string
 }
 
-const loginApi = userApi.injectEndpoints({
+export const loginApi = userApi.injectEndpoints({
   endpoints: (build) => ({
     loginUser: build.mutation<LoginResponse, LoginData>({
       query: (body) => ({
@@ -33,3 +33,6 @@ const loginApi = userApi.injectEndpoints({
 })
 
 export const { useLoginUserMutation, useLogoutUserMutation } = loginApi
+export const {
+  endpoints: { loginUser },
+} = loginApi

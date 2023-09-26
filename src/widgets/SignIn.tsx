@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
@@ -9,12 +10,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import InputBoxComponent from '../common_components/input_box';
 import { LoginData, User } from '../types/user';
-import MainPage from '../view/MainPage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { useNavigate } from 'react-router-dom';
-import { RoutePaths } from '../constants/routes';
 import { useLoginUserMutation } from '../store/endpoint/login';
 import { setCredentials } from '../store/slice/user';
 
@@ -68,21 +67,11 @@ function SubmitButton(props: { label: string, disabled: boolean }) {
 }
 
 
-interface State {
-    state: boolean
-}
-interface FormData {
-    email: string,
-    password: string
-}
 
-function SignInForm(state: State) {
+function SignInForm() {
     const dispatch = useAppDispatch();
     const navigation = useNavigate();
     const [login, { isSuccess, isLoading, isError }] = useLoginUserMutation()
-
-
-    // const [data, setData] = useState<FormData>({ email: '', password: '' });
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -96,16 +85,15 @@ function SignInForm(state: State) {
             password: data.get('password')
         } as LoginData
 
-        const test = await login(loginData).unwrap();
-        dispatch(setCredentials({
-            email: loginData.email,
-            password: loginData.password,
-            token: test.token
-        } as User))
+        await login(loginData).unwrap();
+
         // if (isSuccess && test != null) {
         //     navigation(RoutePaths.Main);
         // }
+
     };
+
+
 
 
     return (
@@ -138,13 +126,18 @@ function SignInForm(state: State) {
 
 export default function SignInMain() {
     const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
-    console.log('Updating')
+    if (isAuthenticated) {
+        console.log('Updated')
+    }
     // if (isAuthenticated) {
     //     return (<MainPage />)
     // }
+    // useEffect(() => {
+    //     console.log('use effect fired')
+    // }, [isAuthenticated])
 
     return (
-        <SignInForm state={isAuthenticated} />
+        <SignInForm />
     );
 }
 

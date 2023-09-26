@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { styled, } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -18,15 +17,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-import Events from '../widgets/Events'
 import Charts from '../widgets/charts';
 import { mainListItems, secondaryListItems } from '../widgets/listItems';
 import Deposits from '../widgets/deposits';
 import Orders from '../widgets/orders';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function Copyright(props: any) {
+function Copyright() {
     return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+        <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://mui.com/">
                 Your Website
@@ -121,7 +118,7 @@ function RecentDeposit() {
     )
 }
 
-function OrdersWidget() {
+function RecentOrders() {
     return (
         <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
@@ -198,6 +195,7 @@ function LeftSideDrawerWidget() {
         </>
     )
 }
+
 function MainPage() {
     return (
         <Box sx={{ display: 'flex' }}>
@@ -219,9 +217,9 @@ function MainPage() {
                     <Grid container spacing={3}>
                         <DashBoardWidget />
                         <RecentDeposit />
-                        <OrdersWidget />
+                        <RecentOrders />
                     </Grid>
-                    <Copyright sx={{ pt: 4 }} />
+                    <Copyright />
                 </Container>
 
             </Box>
@@ -229,4 +227,5 @@ function MainPage() {
     );
 }
 
-export default MainPage()
+export default MainPage
+

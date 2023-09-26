@@ -21,39 +21,21 @@ function InputBox() {
     )
 }
 
-function Checkbox() {
-    return (
-        <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                m: 1,
-                bgcolor: 'background.paper',
-                borderRadius: 1,
-            }}
-        >
-            <FormControlLabel
-                control={<Checkbox />}
-                label="Birthday"
-            />
-            <FormControlLabel
-                control={<Checkbox />}
-                label="Anniversary"
-            />
-        </Box>
-    )
-}
+
 
 export default function Events() {
     return (
-        <Container component="main" maxWidth="xs">
-            <Box component="form" noValidate sx={{ mt: 3 }}>
-                <Grid container spacing={2}>
-                    <InputBox />
-                    <DatePickerComponent />
-                    <Checkbox />
-                </Grid >
-            </Box >
-        </Container>
+        <Box>
+            <Container component="main" maxWidth="xs">
+                <Box component="form" noValidate sx={{ mt: 3 }}>
+                    <h1>Hello events</h1>
+                    <Grid container spacing={2}>
+                        <InputBox />
+                        <DatePickerComponent />
+                    </Grid >
+                </Box >
+            </Container>
+        </Box>
+
     );
 }
