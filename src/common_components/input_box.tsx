@@ -2,7 +2,7 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 
-interface InputBoxData {
+type InputBoxData = {
     autocomplete: string;
     xs: number;
     name: string;

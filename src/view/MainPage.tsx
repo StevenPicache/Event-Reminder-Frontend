@@ -20,7 +20,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Charts from '../widgets/charts';
 import { mainListItems, secondaryListItems } from '../widgets/listItems';
 import Deposits from '../widgets/deposits';
-import Orders from '../widgets/orders';
+import UpcomingCelebrations from '../widgets/UpcomingCelebration';
+
+
 function Copyright() {
     return (
         <Typography variant="body2" color="text.secondary" align="center">
@@ -118,11 +120,11 @@ function RecentDeposit() {
     )
 }
 
-function RecentOrders() {
+function Celebration() {
     return (
         <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                <Orders />
+                <UpcomingCelebrations />
             </Paper>
         </Grid>
     )
@@ -133,13 +135,12 @@ function LeftSideDrawerWidget() {
     const toggleDrawer = () => {
         setOpen(!open);
     };
-
     return (
         <>
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
-                        pr: '24px', // keep right padding when drawer closed
+                        pr: '20px',
                     }}
                 >
                     <IconButton
@@ -152,7 +153,6 @@ function LeftSideDrawerWidget() {
                             ...(open && { display: 'none' }),
                         }}
                     >
-                        <MenuIcon />
                     </IconButton>
                     <Typography
                         component="h1"
@@ -163,11 +163,6 @@ function LeftSideDrawerWidget() {
                     >
                         Dashboard
                     </Typography>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={4} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
                 </Toolbar>
             </AppBar>
 
@@ -215,9 +210,9 @@ function MainPage() {
                 <Toolbar />
                 <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                     <Grid container spacing={3}>
-                        <DashBoardWidget />
-                        <RecentDeposit />
-                        <RecentOrders />
+                        {/* <DashBoardWidget />
+                        <RecentDeposit /> */}
+                        <Celebration />
                     </Grid>
                     <Copyright />
                 </Container>

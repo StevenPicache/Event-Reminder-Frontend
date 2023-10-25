@@ -1,4 +1,4 @@
-export interface User {
+export type User = {
   firstName?: string
   lastName?: string
   email: string
@@ -6,7 +6,7 @@ export interface User {
   token: string
 }
 
-export interface LoginData {
+export type LoginData = {
   email: string
   password: string
 }

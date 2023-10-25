@@ -1,28 +1,30 @@
 import { userApi } from '../api/user'
 import { LoginData, User } from '../../types/user'
 
-export interface LoginRequest {
+export type LoginRequest = {
   username: string
   password: string
 }
 
-export interface LoginResponse {
+export type LoginResponse = {
   isAuthenticated: boolean
   token: string
 }
+const API_LOGIN_PATH = '/auth/v0/login'
+const API_LOGOUT_PATH = '/auth/v0/logout'
 
-export const loginApi = userApi.injectEndpoints({
+export const userEndpoints = userApi.injectEndpoints({
   endpoints: (build) => ({
     loginUser: build.mutation<LoginResponse, LoginData>({
       query: (body) => ({
-        url: '/auth/v0/login',
+        url: API_LOGIN_PATH,
         method: 'POST',
         body: body,
       }),
     }),
     logoutUser: build.mutation<LoginResponse, LoginData>({
       query: (body) => ({
-        url: '/auth/v0/logout',
+        url: API_LOGOUT_PATH,
         method: 'POST',
         body: body,
       }),
@@ -32,7 +34,7 @@ export const loginApi = userApi.injectEndpoints({
   overrideExisting: false,
 })
 
-export const { useLoginUserMutation, useLogoutUserMutation } = loginApi
+export const { useLoginUserMutation, useLogoutUserMutation } = userEndpoints
 export const {
   endpoints: { loginUser },
-} = loginApi
+} = userEndpoints

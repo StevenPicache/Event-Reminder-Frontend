@@ -9,18 +9,20 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import InputBoxComponent from '../common_components/input_box';
-import { LoginData, User } from '../types/user';
+import { LoginData } from '../types/user';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks'
-import { useNavigate } from 'react-router-dom';
+
+
+
 import { useLoginUserMutation } from '../store/endpoint/login';
-import { setCredentials } from '../store/slice/user';
 
 
 const defaultTheme = createTheme();
 
-interface Label { label: string; }
+type Label = {
+    label: string;
+}
 
 function SignUpView({ label }: Label) {
     return (
@@ -69,13 +71,11 @@ function SubmitButton(props: { label: string, disabled: boolean }) {
 
 
 function SignInForm() {
-    const dispatch = useAppDispatch();
-    const navigation = useNavigate();
+    // const dispatch = useAppDispatch();
+    // const navigation = useNavigate();
     const [login, { isSuccess, isLoading, isError }] = useLoginUserMutation()
-
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -85,16 +85,14 @@ function SignInForm() {
             password: data.get('password')
         } as LoginData
 
-        await login(loginData).unwrap();
-
-        // if (isSuccess && test != null) {
-        //     navigation(RoutePaths.Main);
-        // }
-
+        try {
+            const res = await login(loginData).unwrap();
+            console.log(res.isAuthenticated)
+            console.log(res.token)
+        } catch (error) {
+            console.error('Rejected', JSON.stringify(error))
+        }
     };
-
-
-
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -108,7 +106,6 @@ function SignInForm() {
                         alignItems: 'center'
                     }}>
                     <TitleAndHeader label="Sign In" />
-
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <InputBoxComponent autocomplete="email" xs={12} name="email" label="Email Address" value={email} setValue={setEmail} autofocus={true} />
@@ -125,16 +122,16 @@ function SignInForm() {
 
 
 export default function SignInMain() {
-    const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
-    if (isAuthenticated) {
-        console.log('Updated')
-    }
-    // if (isAuthenticated) {
-    //     return (<MainPage />)
-    // }
-    // useEffect(() => {
-    //     console.log('use effect fired')
-    // }, [isAuthenticated])
+    // const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
+    // console.log('Updating MAIN COMPONETN')
+    // // if (isAuthenticated) {
+    // //     console.log('Authenticated already')
+    // // } else {
+    // //     console.log('not authenticated yet')
+    // // }
+    // // if (isAuthenticated) {
+    // //     return (<MainPage />)
+    // // }
 
     return (
         <SignInForm />
