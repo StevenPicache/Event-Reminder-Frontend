@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions":false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -22,5 +23,5 @@
   },
   "include": [
     "src"
-  ]
+, "src/hooks.ts", "src/store/store.ts", "main.tsx"  ]
 }
