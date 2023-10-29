@@ -1,39 +1,50 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Title from './title';
 import { useGetEventsQuery } from '../store/endpoint/celebrations';
+import { Box, Typography } from '@mui/material';
 
 
-
-
-function preventDefault(event: React.MouseEvent) {
-    event.preventDefault();
-}
-/// ADD PAGINATION TOO 
+/// TODO: HELPER FUNCTION AND CONVERT DATE TO A HUMAN READABLE VERSION
 export default function UpcomingCelebrations() {
     const { data } = useGetEventsQuery();
-    console.log('Querying data')
-    console.log(data)
     return (
-        <>
-            <Title>Upcoming Celebrations</Title>
+        <Box
+            sx={{
+                overflow: 'auto',
+            }}
+        >
+            <Typography component="h1" variant="h4" color="primary" gutterBottom>
+                {'Celebrations'}
+            </Typography>
+
             <Table size="medium">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Birthdate</TableCell>
-                        <TableCell align="right">Wedding Anniversary</TableCell>
+                        <TableCell>
+                            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                {'Name'}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                {'Birthdate'}
+                            </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                {'Wedding Anniversary'}
+                            </Typography>
+                        </TableCell>
                     </TableRow>
                 </TableHead>
+
                 <TableBody>
-                    {data?.map((row) => (
-                        <TableRow key={row.id}>
+                    {data?.map((row, index) => (
+                        <TableRow key={index}>
                             <TableCell>{row.name}</TableCell>
                             <TableCell>{`${row.birthDate}`}</TableCell>
                             <TableCell align="right">{`${row.weddingAnniversary}`}</TableCell>
@@ -41,34 +52,6 @@ export default function UpcomingCelebrations() {
                     ))}
                 </TableBody>
             </Table>
-            <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-                See more
-            </Link>
-        </>
+        </Box>
     );
 }
-
-
-
-// const data = [
-//     {
-//         id: 0,
-//         name: 'Paul McCartney',
-//         birthDate: '14 Mar, 2019',
-//         weddingAnniversary: '14 Mar, 2019',
-//     },
-
-//     {
-//         id: 1,
-//         name: 'Michael Jackson',
-//         birthDate: '15 Mar, 2019',
-//         weddingAnniversary: '14 Mar, 2019',
-//     },
-//     {
-//         id: 2,
-//         name: 'Bruce Springsteen',
-//         birthDate: '16 Mar, 2019',
-//         weddingAnniversary: '14 Mar, 2019',
-//     },
-
-// ];

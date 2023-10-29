@@ -2,6 +2,8 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 
+/// TECH DEBT: REMOVE SET VALUE PROPS
+
 type InputBoxData = {
     autocomplete: string;
     xs: number;

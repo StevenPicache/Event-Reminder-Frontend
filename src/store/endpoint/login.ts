@@ -1,5 +1,5 @@
 import { userApi } from '../api/user'
-import { LoginData, User } from '../../types/user'
+import { LoginData } from '../../types/user'
 
 export type LoginRequest = {
   username: string

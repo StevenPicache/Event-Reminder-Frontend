@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
@@ -71,9 +70,7 @@ function SubmitButton(props: { label: string, disabled: boolean }) {
 
 
 function SignInForm() {
-    // const dispatch = useAppDispatch();
-    // const navigation = useNavigate();
-    const [login, { isSuccess, isLoading, isError }] = useLoginUserMutation()
+    const [login, { isLoading }] = useLoginUserMutation()
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
@@ -86,9 +83,7 @@ function SignInForm() {
         } as LoginData
 
         try {
-            const res = await login(loginData).unwrap();
-            console.log(res.isAuthenticated)
-            console.log(res.token)
+            return await login(loginData).unwrap();
         } catch (error) {
             console.error('Rejected', JSON.stringify(error))
         }
@@ -122,17 +117,6 @@ function SignInForm() {
 
 
 export default function SignInMain() {
-    // const isAuthenticated = useAppSelector((state) => state.userReducer.isAuthenticated)
-    // console.log('Updating MAIN COMPONETN')
-    // // if (isAuthenticated) {
-    // //     console.log('Authenticated already')
-    // // } else {
-    // //     console.log('not authenticated yet')
-    // // }
-    // // if (isAuthenticated) {
-    // //     return (<MainPage />)
-    // // }
-
     return (
         <SignInForm />
     );
