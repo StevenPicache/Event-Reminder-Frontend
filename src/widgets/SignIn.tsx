@@ -12,8 +12,6 @@ import { LoginData } from '../types/user';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 
-
-
 import { useLoginUserMutation } from '../store/endpoint/login';
 
 
