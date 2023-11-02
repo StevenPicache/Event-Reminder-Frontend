@@ -10,12 +10,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
-import { setDrawerState, setDrawerText } from '../store/slice/event';
+import { setDrawerState } from '../store/slice/event';
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { AppBar, drawerWidth } from '../constants/drawerStyles';
-import { useNavigate } from 'react-router-dom';
-import AppRoutes, { RoutePaths } from '../routes';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { AddCircle, Event } from '@mui/icons-material';
+import { listItems } from '../constants/constants';
+import EventForm from './EventForm';
+import Events from './Event';
+import { RoutePaths } from '../constants/routes';
+
 
 
 function DrawerOptionsHeader() {
@@ -34,35 +38,18 @@ function DrawerOptionsHeader() {
                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                 </IconButton>
             </Box>
-
         </>
-
     )
 }
 
 
-type RouteTypes = {
-    name: string,
-    path: string,
+type ButtonClick = {
+    path: string
 }
-
 function DrawerOptions() {
-    const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    const listItems: RouteTypes[] = [
-        {
-            name: 'Events',
-            path: RoutePaths.Events
-        },
-        {
-            name: 'Add Events',
-            path: RoutePaths.AddEvents
-        },
-    ]
-
-    const handleClick = ({ name, path }: RouteTypes) => {
-        dispatch(setDrawerText(name))
+    const handleClick = ({ path }: ButtonClick) => {
         navigate(path)
     }
 
@@ -70,7 +57,7 @@ function DrawerOptions() {
         <List>
             {listItems.map((text, index) => (
                 <ListItem key={index}>
-                    <ListItemButton onClick={() => handleClick({ name: text.name, path: text.path })}>
+                    <ListItemButton onClick={() => handleClick({ path: text.path })}>
                         <ListItemIcon sx={{ justifyContent: 'start', flex: 'wrap' }}>
                             {index % 2 === 0 ? <Event /> : <AddCircle />}
                         </ListItemIcon>
@@ -84,7 +71,6 @@ function DrawerOptions() {
 
 
 type AppBarHeader = {
-    title: string,
     state: boolean
 }
 function AppBarHeader({ state }: AppBarHeader) {
@@ -109,12 +95,10 @@ function AppBarHeader({ state }: AppBarHeader) {
 
 export default function MainPageDrawer() {
     const drawerState = useAppSelector((state) => state.eventReducer.drawerState)
-    const toolbarTitle = useAppSelector((state) => state.eventReducer.currentSelectedDrawer)
-
     return (
         <Box sx={{ display: 'flex', }}>
             <CssBaseline />
-            <AppBarHeader title={toolbarTitle} state={drawerState} />
+            <AppBarHeader state={drawerState} />
             <Drawer
                 sx={{
                     width: drawerWidth,
@@ -131,7 +115,11 @@ export default function MainPageDrawer() {
                 <Divider />
                 <DrawerOptions />
             </Drawer>
-            <AppRoutes />
+            <Routes>
+                <Route path={RoutePaths.default} Component={Events} />
+                <Route path={RoutePaths.Events} Component={Events} />
+                <Route path={RoutePaths.AddEvents} Component={EventForm} />
+            </Routes>
         </Box >
     );
 }

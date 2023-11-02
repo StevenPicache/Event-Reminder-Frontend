@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import { Avatar, Container, Paper } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useAppSelector } from '../hooks';
 import Button from '@mui/material/Button';
@@ -13,34 +13,43 @@ import Grid from '@mui/material/Grid';
 import { Event } from '@mui/icons-material';
 import { Main } from '../constants/drawerStyles';
 import { PostEvents, useAddEventsMutation } from '../store/endpoint/event';
-
+import dayjs from 'dayjs';
 
 
 
 function AddEventWidget() {
-    const [addCelebration, { isSuccess }] = useAddEventsMutation()
-    const [first_name, setFirstName] = useState<string>();
-    const [last_name, setLastName] = useState<string>();
-    const [eventName, setEventName] = useState<string>();
-    const [date, setDate] = useState<Date>(new Date());
+    const [addCelebration] = useAddEventsMutation()
+    const [first_name, setFirstName] = useState<string>('');
+    const [last_name, setLastName] = useState<string>('');
+    const [eventName, setEventName] = useState<string>('');
+    const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-            const data: PostEvents = {
-                firstName: first_name ?? '',
-                lastName: last_name ?? '',
-                eventType: eventName ?? '',
-                eventDate: date
+            if (date != null) {
+                const data: PostEvents = {
+                    firstName: first_name ?? '',
+                    lastName: last_name ?? '',
+                    eventType: eventName ?? '',
+                    eventDate: date.toDate()
+                }
+                await addCelebration(data)
             }
-
-            await addCelebration(data)
-            console.log(isSuccess)
         } catch (e) {
             console.log(e)
         }
+
+        setFirstName('')
+        setLastName('')
+        setEventName('')
+        setDate(null)
     }
 
+
+    const handleDateChange = (date: dayjs.Dayjs | null) => {
+        setDate(date);
+    };
 
     return (
         <Container component="main" maxWidth="xs">
@@ -72,6 +81,7 @@ function AddEventWidget() {
                                 onChange={(e) => setFirstName(e.target.value)}
                             />
                         </Grid>
+
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 required
@@ -83,6 +93,7 @@ function AddEventWidget() {
                                 value={last_name}
                                 onChange={(e) => setLastName(e.target.value)}
                             />
+
                         </Grid>
 
                         <Grid item xs={12}>
@@ -98,19 +109,19 @@ function AddEventWidget() {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} >
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DemoContainer components={['DatePicker']}>
                                     <DatePicker
                                         label="Date"
-                                        sx={{
-                                            backgroundColor: (theme) => theme.palette.grey[200],
-                                        }}
+                                        sx={{ backgroundColor: (theme) => theme.palette.grey[200] }}
                                         format='MM-D-YYYY'
-                                        onChange={() => setDate}
+                                        value={date}
+                                        onChange={handleDateChange}
                                     />
                                 </DemoContainer>
                             </LocalizationProvider>
                         </Grid>
+
                     </Grid>
                     <Button
                         sx={{ mt: 5, mb: 2 }}
@@ -123,12 +134,13 @@ function AddEventWidget() {
 
                 </Box>
             </Box>
-        </Container>
+        </Container >
     )
 }
 
-export default function CelebrationForm() {
+export default function EventForm() {
     const drawerState = useAppSelector((state) => state.eventReducer.drawerState)
+
     return (
         <Main open={drawerState} sx={{
             py: 10,

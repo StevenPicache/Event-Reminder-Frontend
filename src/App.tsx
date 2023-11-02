@@ -8,7 +8,6 @@ export default function App() {
     <Provider store={store}>
       <div className="App">
         <MainPage />
-
       </div>
     </Provider>
   );

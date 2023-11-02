@@ -1,16 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions":false,
+    "allowImportingTsExtensions": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -21,7 +17,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-, "src/hooks.ts", "src/store/store.ts", "main.tsx"  ]
+  "include": ["src", "src/hooks.ts", "src/store/store.ts", "main.tsx"]
 }

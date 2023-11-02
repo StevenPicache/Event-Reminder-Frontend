@@ -1,6 +1,7 @@
 import { eventsApi } from '../api/event'
 
 export type GetEvents = {
+  eventId: number
   name: string
   eventDate: Date
   eventType: string
@@ -24,7 +25,9 @@ export const eventEndpoints = eventsApi.injectEndpoints({
           method: 'GET',
         }
       },
+      providesTags: ['Events'],
     }),
+
     addEvents: build.mutation<void, PostEvents>({
       query(body) {
         return {
@@ -33,6 +36,7 @@ export const eventEndpoints = eventsApi.injectEndpoints({
           body: body,
         }
       },
+      invalidatesTags: ['Events'],
     }),
   }),
 })

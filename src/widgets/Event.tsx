@@ -6,15 +6,10 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { GetEvents, useGetEventsQuery } from '../store/endpoint/event';
-import { Box, CircularProgress, Grid, Paper, TableSortLabel, Typography } from '@mui/material';
+import { Box, Grid, Paper, TableContainer, TableSortLabel, Typography } from '@mui/material';
 import { Main } from '../constants/drawerStyles';
 import { useAppSelector } from '../hooks';
 import { convertToLocaleDate } from '../helper/convertUtcToLocale';
-
-
-/// FEATURES    :
-/// TODO        : ADD,EDIT,DELETE: Birthdate and Wedding Anniv
-
 
 
 
@@ -27,9 +22,6 @@ function Copyright() {
         </Typography>
     );
 }
-
-
-
 
 type PropsEvents = {
     data: GetEvents[]
@@ -51,16 +43,15 @@ function TableBodyWidget(props: PropsEvents) {
 
     return (
         <>
-
-            <TableHead>
+            <TableHead >
                 <TableRow>
-                    <TableCell>
+                    <TableCell sx={{ backgroundColor: (theme) => theme.palette.grey[200], }}>
                         <Typography color="primary">
                             {'Name'}
                         </Typography>
                     </TableCell>
 
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ backgroundColor: (theme) => theme.palette.grey[200], }}>
                         <TableSortLabel direction={asc ? 'asc' : 'desc'} onClick={() => onClickHandler(false)}>
                             <Typography color="primary">
                                 {'Date'}
@@ -68,7 +59,7 @@ function TableBodyWidget(props: PropsEvents) {
                         </TableSortLabel>
                     </TableCell>
 
-                    <TableCell align="right">
+                    <TableCell align="right" sx={{ backgroundColor: (theme) => theme.palette.grey[200], }}>
                         <TableSortLabel direction={asc ? 'asc' : 'desc'}>
                             <Typography color="primary" >
                                 {'Event name'}
@@ -81,10 +72,10 @@ function TableBodyWidget(props: PropsEvents) {
 
             <TableBody>
                 {data?.map((row, index) => (
-                    <TableRow key={index} sx={{ backgroundColor: (theme) => index % 2 === 0 ? theme.palette.grey[300] : theme.palette.grey[200] }}>
+                    <TableRow hover key={index} sx={{ backgroundColor: (theme) => index % 2 === 0 ? theme.palette.grey[300] : theme.palette.grey[200] }}>
                         <TableCell >{row.name}</TableCell>
-                        <TableCell align="center">{`${convertToLocaleDate({ date: row.eventDate })}`}</TableCell>
-                        <TableCell align="right">{row.eventType}</TableCell>
+                        <TableCell align="center">{`${convertToLocaleDate({ date: row.eventDate })} `}</TableCell>
+                        <TableCell align="right">{row.eventType ?? 'N/A'}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>
@@ -93,27 +84,33 @@ function TableBodyWidget(props: PropsEvents) {
     )
 }
 
+type TableProps = {
+    data: GetEvents[],
+    isSuccess: boolean
+}
+function TableWidget(props: TableProps) {
 
-function TableWidget() {
-    const { data, isSuccess } = useGetEventsQuery();
     return (
-        isSuccess ?
-            <Table size="medium" sx={{ display: 'flex-col', alignItems: 'center', justifyContent: 'center' }} >
-                <TableBodyWidget data={data ?? []} />
-            </Table>
-            : <CircularProgress sx={{ display: 'flex-col', alignItems: 'center', justifyContent: 'center' }} />
+        props.isSuccess ?
+            <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader size="medium" sx={{
+                    display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
+                }} >
+                    <TableBodyWidget data={props.data ?? []} />
+                </Table >
+            </TableContainer>
+
+            : <Box />
     )
 }
 
 
-export default function UpcomingCelebrations() {
+export default function Events() {
+    const { data, isSuccess } = useGetEventsQuery()
     const drawerState = useAppSelector((state) => state.eventReducer.drawerState)
+
     return (
-        <Main open={drawerState} sx={{
-
-            py: 10,
-
-        }}>
+        <Main open={drawerState} sx={{ py: 10 }}>
             <Grid item xs={12} sx={{ mb: 5 }} >
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', backgroundColor: (theme) => theme.palette.grey[200], borderRadius: (theme) => theme.spacing(2), overflow: 'hidden' }}>
                     <Box
@@ -121,7 +118,7 @@ export default function UpcomingCelebrations() {
                             overflow: 'auto',
                         }}
                     >
-                        <TableWidget />
+                        <TableWidget data={data ?? []} isSuccess={isSuccess} />
                     </Box>
                 </Paper>
             </Grid>
