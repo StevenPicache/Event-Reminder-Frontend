@@ -14,6 +14,11 @@ export type PostEvents = {
   eventDate: Date
 }
 
+export type ErrorResponse = {
+  error: string
+  status: string
+}
+
 const PATH_API_EVENTS = 'events/v0/events'
 
 export const eventEndpoints = eventsApi.injectEndpoints({
@@ -28,7 +33,7 @@ export const eventEndpoints = eventsApi.injectEndpoints({
       providesTags: ['Events'],
     }),
 
-    addEvents: build.mutation<void, PostEvents>({
+    addEvents: build.mutation<ErrorResponse, PostEvents>({
       query(body) {
         return {
           url: PATH_API_EVENTS,
