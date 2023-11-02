@@ -89,9 +89,12 @@ type TableProps = {
     isSuccess: boolean
 }
 function TableWidget(props: TableProps) {
-
+    /// TODO: IMPROVE FONT OF HEADER
     return (
         <TableContainer sx={{ maxHeight: 440 }}>
+            <Typography variant="h6" color="black" align='center' >
+                {'Your events for the next 2 weeks'}
+            </Typography>
             <Table stickyHeader size="medium" sx={{
                 display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
             }} >
