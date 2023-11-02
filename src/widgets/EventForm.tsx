@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Avatar, Container, Paper } from '@mui/material';
+import { Avatar, Container, Paper, Typography } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
@@ -16,13 +16,19 @@ import { PostEvents, useAddEventsMutation } from '../store/endpoint/event';
 import dayjs from 'dayjs';
 
 
+/// TODO: Handle form validation and error message
 
 function AddEventWidget() {
-    const [addCelebration] = useAddEventsMutation()
+    const [addCelebration, { isError }] = useAddEventsMutation()
+
     const [first_name, setFirstName] = useState<string>('');
     const [last_name, setLastName] = useState<string>('');
     const [eventName, setEventName] = useState<string>('');
     const [date, setDate] = useState<dayjs.Dayjs | null>(null);
+
+
+    const [error, setError] = useState<string>('');
+
 
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -34,9 +40,12 @@ function AddEventWidget() {
                     eventType: eventName ?? '',
                     eventDate: date.toDate()
                 }
-                await addCelebration(data)
+                await addCelebration(data).unwrap()
             }
-        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
+            /// TODO / TECH DEBT: Handle error properly without using type any
+            setError(e.error)
             console.log(e)
         }
 
@@ -62,6 +71,11 @@ function AddEventWidget() {
                     alignItems: 'center',
                 }}
             >
+
+                <Typography>
+                    {isError ? error : ''}
+                </Typography>
+
                 <Avatar sx={{ m: 1, bgcolor: 'primary.main' }} >
                     <Event />
                 </Avatar>

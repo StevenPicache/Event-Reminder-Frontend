@@ -91,16 +91,13 @@ type TableProps = {
 function TableWidget(props: TableProps) {
 
     return (
-        props.isSuccess ?
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader size="medium" sx={{
-                    display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
-                }} >
-                    <TableBodyWidget data={props.data ?? []} />
-                </Table >
-            </TableContainer>
-
-            : <Box />
+        <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader size="medium" sx={{
+                display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
+            }} >
+                <TableBodyWidget data={props.data ?? []} />
+            </Table >
+        </TableContainer>
     )
 }
 
