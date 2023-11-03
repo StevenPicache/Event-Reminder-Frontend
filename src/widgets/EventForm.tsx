@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Avatar, Container, Paper, Typography } from '@mui/material';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -15,9 +15,6 @@ import { Main } from '../constants/drawerStyles';
 import { PostEvents, useAddEventsMutation } from '../store/endpoint/event';
 import dayjs from 'dayjs';
 
-
-/// TODO: Handle form validation and error message
-
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
@@ -26,6 +23,12 @@ function AddEventWidget() {
     const [eventName, setEventName] = useState<string>('');
     const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
+    const [firstNameError, setFirstNameError] = useState<boolean>(false);
+    const [lastNameError, setLastNameError] = useState<boolean>(false);
+    const [eventNameError, setEventNameError] = useState<boolean>(false);
+    const [dateError, setDateError] = useState<boolean>(false);
+
+
 
     const [error, setError] = useState<string>('');
 
@@ -33,7 +36,8 @@ function AddEventWidget() {
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-            if (date != null) {
+
+            if (first_name && last_name && eventName && date != null) {
                 const data: PostEvents = {
                     firstName: first_name ?? '',
                     lastName: last_name ?? '',
@@ -41,6 +45,25 @@ function AddEventWidget() {
                     eventDate: date.toDate()
                 }
                 await addCelebration(data).unwrap()
+
+                clearFields()
+                clearErrors()
+
+            } else {
+                if (first_name.length === 0) {
+                    setFirstNameError(true)
+                }
+
+                if (last_name.length === 0) {
+                    setLastNameError(true)
+                }
+
+                if (eventName.length === 0) {
+                    setEventNameError(true)
+                }
+                if (date === null) {
+                    setDateError(true)
+                }
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
@@ -48,17 +71,24 @@ function AddEventWidget() {
             setError(e.error)
             console.log(e)
         }
+    }
 
+    const clearFields = () => {
         setFirstName('')
         setLastName('')
         setEventName('')
         setDate(null)
     }
 
+    const clearErrors = () => {
+        setFirstNameError(false)
+        setLastNameError(false)
+        setEventNameError(false)
+        setDateError(false)
+    }
 
-    const handleDateChange = (date: dayjs.Dayjs | null) => {
-        setDate(date);
-    };
+
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -93,6 +123,8 @@ function AddEventWidget() {
                                 autoComplete="given-name"
                                 value={first_name}
                                 onChange={(e) => setFirstName(e.target.value)}
+                                error={firstNameError}
+                                onClick={() => setFirstNameError(false)}
                             />
                         </Grid>
 
@@ -106,6 +138,8 @@ function AddEventWidget() {
                                 autoComplete="family-name"
                                 value={last_name}
                                 onChange={(e) => setLastName(e.target.value)}
+                                error={lastNameError}
+                                onClick={() => setLastNameError(false)}
                             />
 
                         </Grid>
@@ -119,20 +153,23 @@ function AddEventWidget() {
                                 name="eventType"
                                 value={eventName}
                                 onChange={(e) => setEventName(e.target.value)}
+                                error={eventNameError}
+                                onClick={() => setEventNameError(false)}
                             />
                         </Grid>
 
                         <Grid item xs={12}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DemoContainer components={['DatePicker']}>
+                                <Box width={'100%'} sx={{ border: dateError ? 1 : 0, borderColor: dateError ? 'red' : '', }}>
                                     <DatePicker
                                         label="Date"
-                                        sx={{ backgroundColor: (theme) => theme.palette.grey[200] }}
+                                        sx={{ backgroundColor: (theme) => theme.palette.grey[200], width: '100%' }}
                                         format='MM-D-YYYY'
                                         value={date}
-                                        onChange={handleDateChange}
+                                        onChange={(e) => setDate(e)}
+                                        onOpen={() => setDateError(false)}
                                     />
-                                </DemoContainer>
+                                </Box>
                             </LocalizationProvider>
                         </Grid>
 
