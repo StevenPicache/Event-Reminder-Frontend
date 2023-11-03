@@ -98,7 +98,8 @@ function TableWidget(props: TableProps) {
             <Table stickyHeader size="medium" sx={{
                 display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
             }} >
-                <TableBodyWidget data={props.data ?? []} />
+                {props.isSuccess ? <TableBodyWidget data={props.data} /> : <TableBody />}
+
             </Table >
         </TableContainer>
     )
