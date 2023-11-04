@@ -28,8 +28,6 @@ function AddEventWidget() {
     const [eventNameError, setEventNameError] = useState<boolean>(false);
     const [dateError, setDateError] = useState<boolean>(false);
 
-
-
     const [error, setError] = useState<string>('');
 
 
@@ -45,31 +43,34 @@ function AddEventWidget() {
                     eventDate: date.toDate()
                 }
                 await addCelebration(data).unwrap()
-
                 clearFields()
                 clearErrors()
 
             } else {
-                if (first_name.length === 0) {
-                    setFirstNameError(true)
-                }
-
-                if (last_name.length === 0) {
-                    setLastNameError(true)
-                }
-
-                if (eventName.length === 0) {
-                    setEventNameError(true)
-                }
-                if (date === null) {
-                    setDateError(true)
-                }
+                setErrorState()
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
             /// TODO / TECH DEBT: Handle error properly without using type any
             setError(e.error)
             console.log(e)
+        }
+    }
+
+    const setErrorState = () => {
+        if (first_name.length === 0) {
+            setFirstNameError(true)
+        }
+
+        if (last_name.length === 0) {
+            setLastNameError(true)
+        }
+
+        if (eventName.length === 0) {
+            setEventNameError(true)
+        }
+        if (date === null) {
+            setDateError(true)
         }
     }
 
@@ -167,7 +168,7 @@ function AddEventWidget() {
                                         format='MM-D-YYYY'
                                         value={date}
                                         onChange={(e) => setDate(e)}
-                                        onOpen={() => setDateError(false)}
+                                        onSelectedSectionsChange={() => setDateError(false)}
                                     />
                                 </Box>
                             </LocalizationProvider>
