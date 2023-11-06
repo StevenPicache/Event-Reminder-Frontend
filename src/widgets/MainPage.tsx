@@ -15,10 +15,9 @@ import { useAppDispatch, useAppSelector } from '../hooks'
 import { AppBar, drawerWidth } from '../constants/drawerStyles';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { AddCircle, Event } from '@mui/icons-material';
-import { listItems } from '../constants/constants';
 import EventForm from './EventForm';
 import Events from './Event';
-import { RoutePaths } from '../constants/routes';
+import { RoutePaths, listItems } from '../constants/routes';
 
 
 

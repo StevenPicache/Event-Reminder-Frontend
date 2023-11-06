@@ -1,29 +1,10 @@
+import { ErrorResponse, GetEvents, PostEvents } from '../../types/event'
 import { eventsApi } from '../api/event'
 
-export type GetEvents = {
-  eventId: number
-  name: string
-  eventDate: Date
-  eventType: string
-}
-
-export type PostEvents = {
-  firstName: string
-  lastName: string
-  eventType: string
-  eventDate: Date
-}
-
-export type ErrorResponse = {
-  error: string
-  status: string
-}
-
 const PATH_API_EVENTS = 'events/v0/events'
-
 export const eventEndpoints = eventsApi.injectEndpoints({
   endpoints: (build) => ({
-    getEvents: build.query<GetEvents[], void>({
+    getEvents: build.query<GetEvents[], string>({
       query() {
         return {
           url: PATH_API_EVENTS,
@@ -43,10 +24,21 @@ export const eventEndpoints = eventsApi.injectEndpoints({
       },
       invalidatesTags: ['Events'],
     }),
+
+    searchEvents: build.query<GetEvents[], string>({
+      query(searchText) {
+        return {
+          url: `${PATH_API_EVENTS}/${searchText}`,
+          method: 'GET',
+        }
+      },
+      providesTags: ['Events'],
+    }),
   }),
 })
 
-export const { useGetEventsQuery, useAddEventsMutation } = eventEndpoints
+export const { useGetEventsQuery, useAddEventsMutation, useSearchEventsQuery } =
+  eventEndpoints
 export const {
   endpoints: { getEvents },
 } = eventEndpoints

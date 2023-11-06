@@ -12,8 +12,9 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Event } from '@mui/icons-material';
 import { Main } from '../constants/drawerStyles';
-import { PostEvents, useAddEventsMutation } from '../store/endpoint/event';
+import { useAddEventsMutation } from '../store/endpoint/event';
 import dayjs from 'dayjs';
+import { PostEvents } from '../types/event';
 
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
