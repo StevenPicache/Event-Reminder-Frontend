@@ -4,8 +4,8 @@ import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput
 
 type EventSearchBar = {
     searchTerm: string,
-    searchOnChange: React.ChangeEventHandler<HTMLInputElement>
-    clearTextField: React.MouseEventHandler<HTMLButtonElement>
+    searchOnChange?: React.ChangeEventHandler<HTMLInputElement>
+    clearTextField?: React.MouseEventHandler<HTMLButtonElement>
 }
 export function SearchBar(props: EventSearchBar) {
     const { searchTerm, searchOnChange, clearTextField } = props

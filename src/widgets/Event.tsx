@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Grid, Paper, Typography } from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, Typography } from '@mui/material';
 import { Main } from '../constants/drawerStyles';
 import { useAppSelector } from '../hooks';
 import { useSearchEventsQuery } from '../store/endpoint/event';
@@ -21,6 +21,29 @@ function Copyright() {
     );
 }
 
+
+function DisplayEmptyTable({ label }: { label: string }) {
+    return (
+        <>
+            <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader size="medium" sx={{
+                    display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
+                }} >
+                    <TableBody>
+                        <TableCell align='center'>
+                            {label}
+
+                        </TableCell>
+
+                    </TableBody>
+                </Table >
+            </TableContainer>
+        </>
+    )
+}
+
+
+
 function EventsWidget() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
@@ -30,7 +53,7 @@ function EventsWidget() {
 
     const { data: allData, isSuccess, isLoading, isError } = useSearchEventsQuery(debouncedSearchTerm);
 
-    if (isSuccess) {
+    if (isSuccess && allData.length !== 0) {
         const handleDebounce = (value: string) => {
             debouncedSearch(value)
         }
@@ -43,26 +66,46 @@ function EventsWidget() {
             debouncedSearch('')
             setSearchTerm('')
         }
+        return <>
+            <SearchBar
+                searchTerm={searchTerm}
+                searchOnChange={searchOnChange}
+                clearTextField={clearTextField}
+            />
+            <TableWidget data={allData} />
+        </>
 
+
+    } else if (isSuccess && allData.length === 0) {
         return (
             <>
                 <SearchBar
                     searchTerm={searchTerm}
-                    searchOnChange={searchOnChange}
-                    clearTextField={clearTextField}
+                    searchOnChange={(e) => setSearchTerm(e.target.value)}
+                    clearTextField={() => setSearchTerm('')}
                 />
-                <TableWidget data={allData} />
+                <DisplayEmptyTable label={'No data found. Empty table'} />
             </>
-        )
-    } else if (isLoading) {
-        return (
-            <Spinner />
         )
     }
 
     else if (isError) {
-        /// TODO: Add proper error message
-        console.error('Error', isError)
+        return (
+            <>
+                <SearchBar
+                    searchTerm={searchTerm}
+                    searchOnChange={(e) => setSearchTerm(e.target.value)}
+                    clearTextField={() => setSearchTerm('')}
+                />
+                <DisplayEmptyTable label={'An error as has occured when trying to fetch data'} />
+            </>
+        )
+    }
+
+    else if (isLoading) {
+        return (
+            <Spinner />
+        )
     }
 
 }
