@@ -58,7 +58,9 @@ function DrawerOptions() {
                 <ListItem key={index}>
                     <ListItemButton onClick={() => handleClick({ path: text.path })}>
                         <ListItemIcon sx={{ justifyContent: 'start', flex: 'wrap' }}>
-                            {index % 2 === 0 ? <Event /> : <AddCircle />}
+                            {text.name === 'Events' ? <Event /> :
+                                text.name === 'Add Events' ? <AddCircle />
+                                    : <Box />}
                         </ListItemIcon>
                         <ListItemText secondary={text.name} />
                     </ListItemButton>
