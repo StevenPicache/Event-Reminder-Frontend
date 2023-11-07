@@ -13,20 +13,113 @@ import Grid from '@mui/material/Grid';
 import { Event } from '@mui/icons-material';
 import { Main } from '../constants/drawerStyles';
 import { useAddEventsMutation } from '../store/endpoint/event';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { PostEvents } from '../types/event';
+import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
+import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers';
 
+function FormIcon() {
+    return (
+        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }} >
+            <Event />
+        </Avatar>
+    )
+}
+
+type ErrorMessageProps = {
+    isError: boolean
+    errorMessage: string
+}
+function DisplayErrorMessage(props: ErrorMessageProps) {
+    const { isError, errorMessage } = props
+    return (
+        <Typography>
+            {isError ? errorMessage : ''}
+        </Typography>
+    )
+}
+
+type TextFieldProps = {
+    id: string
+    name: string
+    label: string
+    autofocus?: boolean
+    value: string
+    errorValue?: boolean,
+    onChangeText?: React.ChangeEventHandler<HTMLInputElement>
+    onChangeError?: React.MouseEventHandler<HTMLDivElement>
+}
+
+function TextFieldWidget(props: TextFieldProps) {
+    const { id, name, label, autofocus, value, errorValue, onChangeText, onChangeError } = props
+    return (
+        <TextField
+            id={id}
+            name={name}
+            label={label}
+            autoFocus={autofocus ?? false}
+            value={value}
+            onChange={onChangeText}
+            error={errorValue}
+            onClick={onChangeError}
+            required
+            fullWidth
+
+        />
+    )
+}
+
+
+type DatePickerProps = {
+    dateError: boolean
+    value: dayjs.Dayjs | null
+    onChangeDate?: ((value: Dayjs | null, context: PickerChangeHandlerContext<DateValidationError>) => void)
+    onChangeSelection?: ((newValue: FieldSelectedSections) => void)
+}
+function DatePickerWidget(props: DatePickerProps) {
+    const { dateError, value, onChangeDate, onChangeSelection } = props
+    return (
+        <Grid item xs={12}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box width={'100%'} sx={{ border: dateError ? 1 : 0, borderColor: dateError ? 'red' : '', }}>
+                    <DatePicker
+                        label="Date"
+                        sx={{ backgroundColor: (theme) => theme.palette.grey[200], width: '100%' }}
+                        format='MM-D-YYYY'
+                        value={value}
+                        onChange={onChangeDate}
+                        onSelectedSectionsChange={onChangeSelection}
+                    />
+                </Box>
+            </LocalizationProvider>
+        </Grid>
+    )
+}
+
+
+function AddEventButton({ buttonName }: { buttonName: string }) {
+    return (
+        <Button
+            sx={{ mt: 5, mb: 2 }}
+            fullWidth
+            variant="contained"
+            type='submit'
+        >
+            {buttonName}
+        </Button>
+    )
+}
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
     const [first_name, setFirstName] = useState<string>('');
     const [last_name, setLastName] = useState<string>('');
-    const [eventName, setEventName] = useState<string>('');
+    const [event_type, setEventType] = useState<string>('');
     const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
     const [firstNameError, setFirstNameError] = useState<boolean>(false);
     const [lastNameError, setLastNameError] = useState<boolean>(false);
-    const [eventNameError, setEventNameError] = useState<boolean>(false);
+    const [eventTypeError, setEventTypeError] = useState<boolean>(false);
     const [dateError, setDateError] = useState<boolean>(false);
 
     const [error, setError] = useState<string>('');
@@ -36,11 +129,11 @@ function AddEventWidget() {
         event.preventDefault()
         try {
 
-            if (first_name && last_name && eventName && date != null) {
+            if (first_name && last_name && event_type && date != null) {
                 const data: PostEvents = {
-                    firstName: first_name ?? '',
-                    lastName: last_name ?? '',
-                    eventType: eventName ?? '',
+                    firstName: first_name,
+                    lastName: last_name,
+                    eventType: event_type,
                     eventDate: date.toDate()
                 }
                 await addCelebration(data).unwrap()
@@ -67,8 +160,8 @@ function AddEventWidget() {
             setLastNameError(true)
         }
 
-        if (eventName.length === 0) {
-            setEventNameError(true)
+        if (event_type.length === 0) {
+            setEventTypeError(true)
         }
         if (date === null) {
             setDateError(true)
@@ -78,19 +171,16 @@ function AddEventWidget() {
     const clearFields = () => {
         setFirstName('')
         setLastName('')
-        setEventName('')
+        setEventType('')
         setDate(null)
     }
 
     const clearErrors = () => {
         setFirstNameError(false)
         setLastNameError(false)
-        setEventNameError(false)
+        setEventTypeError(false)
         setDateError(false)
     }
-
-
-
 
     return (
         <Container component="main" maxWidth="xs">
@@ -103,88 +193,57 @@ function AddEventWidget() {
                     alignItems: 'center',
                 }}
             >
-
-                <Typography>
-                    {isError ? error : ''}
-                </Typography>
-
-                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }} >
-                    <Event />
-                </Avatar>
+                <DisplayErrorMessage isError={isError} errorMessage={error} />
+                <FormIcon />
 
                 <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={submitForm}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
-                            <TextField
+                            <TextFieldWidget
                                 name="firstName"
-                                required
-                                fullWidth
                                 id="firstName"
                                 label="First Name"
-                                autoFocus
-                                autoComplete="given-name"
+                                autofocus={true}
                                 value={first_name}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                error={firstNameError}
-                                onClick={() => setFirstNameError(false)}
+                                errorValue={firstNameError}
+                                onChangeText={(e) => setFirstName(e.target.value)}
+                                onChangeError={() => setFirstNameError(false)}
                             />
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <TextField
-                                required
-                                fullWidth
+                            <TextFieldWidget
                                 id="lastName"
-                                label="Last Name"
                                 name="lastName"
-                                autoComplete="family-name"
+                                label="Last Name"
                                 value={last_name}
-                                onChange={(e) => setLastName(e.target.value)}
-                                error={lastNameError}
-                                onClick={() => setLastNameError(false)}
+                                errorValue={lastNameError}
+                                onChangeText={(e) => setLastName(e.target.value)}
+                                onChangeError={() => setLastNameError(false)}
                             />
-
                         </Grid>
 
                         <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
+                            <TextFieldWidget
                                 id="event-type"
-                                label="Event Type"
                                 name="eventType"
-                                value={eventName}
-                                onChange={(e) => setEventName(e.target.value)}
-                                error={eventNameError}
-                                onClick={() => setEventNameError(false)}
+                                label="Event Type"
+                                value={event_type}
+                                errorValue={eventTypeError}
+                                onChangeText={(e) => setEventType(e.target.value)}
+                                onChangeError={() => setEventTypeError(false)}
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Box width={'100%'} sx={{ border: dateError ? 1 : 0, borderColor: dateError ? 'red' : '', }}>
-                                    <DatePicker
-                                        label="Date"
-                                        sx={{ backgroundColor: (theme) => theme.palette.grey[200], width: '100%' }}
-                                        format='MM-D-YYYY'
-                                        value={date}
-                                        onChange={(e) => setDate(e)}
-                                        onSelectedSectionsChange={() => setDateError(false)}
-                                    />
-                                </Box>
-                            </LocalizationProvider>
-                        </Grid>
-
+                        <DatePickerWidget
+                            dateError={dateError}
+                            value={date}
+                            onChangeDate={(e) => setDate(e)}
+                            onChangeSelection={() => setDateError(false)}
+                        />
                     </Grid>
-                    <Button
-                        sx={{ mt: 5, mb: 2 }}
-                        fullWidth
-                        variant="contained"
-                        type='submit'
-                    >
-                        Add Event
-                    </Button>
 
+                    <AddEventButton buttonName={'Add Event'} />
                 </Box>
             </Box>
         </Container >
