@@ -1,19 +1,39 @@
 
+# Project Title
+
+A small project to showcase my knowledge and skillsets
+
+## Features
+
+- Add event
+- Event Table with Sorting
+- Search Event by names and event type
+
+
+## Tech Stack
+
+**Client:** React, TypeScript, Redux Toolkit, RTK Query 
 
 
 
-https://github.com/StevenPicache/Event-Reminder-Frontend/assets/56164184/690c41d6-de10-4e1b-97a0-c48849fc7c56
+## Documentation
+
+[React](https://react.dev/)
+
+[TypeScript](https://www.typescriptlang.org/)
+
+[Redux Toolkit](https://redux-toolkit.js.org/)
+
+[RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
 
 
+## Installation
 
+Install my-project with npm
 
-Stacks: 
-1. React
-2. TypeScript
-3. Redux Toolkit
-4. RTK Query
-
-Building and Running:
-
-1. npm install
-2. npm run start
+```bash
+  cd Event-Reminder-Frontend
+  npm install 
+  npm run start
+```
+    
