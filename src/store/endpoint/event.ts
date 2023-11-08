@@ -39,6 +39,3 @@ export const eventEndpoints = eventsApi.injectEndpoints({
 
 export const { useGetEventsQuery, useAddEventsMutation, useSearchEventsQuery } =
   eventEndpoints
-export const {
-  endpoints: { getEvents },
-} = eventEndpoints

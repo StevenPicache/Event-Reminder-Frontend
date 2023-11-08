@@ -32,11 +32,9 @@ function TableHeaderWidget(props: TableHeaderProps) {
                 </TableCell>
 
                 <TableCell align="right" sx={{ backgroundColor: (theme) => theme.palette.grey[200], }}>
-                    <TableSortLabel direction={asc ? 'asc' : 'desc'}>
-                        <Typography >
-                            {'Event name'}
-                        </Typography>
-                    </TableSortLabel>
+                    <Typography >
+                        {'Event name'}
+                    </Typography>
                 </TableCell>
             </TableRow>
         </TableHead >
