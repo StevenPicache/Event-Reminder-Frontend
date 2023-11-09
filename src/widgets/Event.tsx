@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, Typography } from '@mui/material';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import { Main } from '../constants/drawerStyles';
 import { useAppSelector } from '../hooks';
 import { useSearchEventsQuery } from '../store/endpoint/event';
@@ -30,11 +30,11 @@ function DisplayEmptyTable({ label }: { label: string }) {
                     display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
                 }} >
                     <TableBody>
-                        <TableCell align='center'>
-                            {label}
-
-                        </TableCell>
-
+                        <TableRow>
+                            <TableCell align='center'>
+                                {label}
+                            </TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table >
             </TableContainer>

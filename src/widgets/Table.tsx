@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { GetEvents } from '../types/event'
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from '@mui/material'
+import { Box, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TableSortLabel, Typography } from '@mui/material'
 import { convertToLocaleDate } from '../helper/convertUtcToLocale'
+import { ArrowDropDown } from '@mui/icons-material'
 
 type TableProps = {
     data: GetEvents[],
@@ -44,17 +45,27 @@ function TableHeaderWidget(props: TableHeaderProps) {
 }
 
 
-function TableBodyWidget(props: TableProps) {
-    const { data } = props
+type TableBodyProps = {
+    data: GetEvents[],
+    rowsPerPage: number,
+    pageNum: number
+}
+
+function TableBodyWidget(props: TableBodyProps) {
+    const { data, rowsPerPage, pageNum } = props
+    const newData = rowsPerPage > 0 ? data.slice(pageNum * rowsPerPage, pageNum * rowsPerPage + rowsPerPage) : data
+
     return (
         <TableBody>
-            {data.map((row, index) => (
-                <TableRow hover key={index} sx={{ backgroundColor: (theme) => index % 2 === 0 ? theme.palette.grey[300] : theme.palette.grey[200] }}>
-                    <TableCell >{row.name}</TableCell>
-                    <TableCell align="center">{`${convertToLocaleDate({ date: row.eventDate })} `}</TableCell>
-                    <TableCell align="right">{row.eventType ?? 'N/A'}</TableCell>
-                </TableRow>
-            ))}
+            {
+                newData.map((row, index) => (
+                    <TableRow hover key={index} sx={{ backgroundColor: (theme) => index % 2 === 0 ? theme.palette.grey[300] : theme.palette.grey[200] }}>
+                        <TableCell >{row.name}</TableCell>
+                        <TableCell align="center">{`${convertToLocaleDate({ date: row.eventDate })} `}</TableCell>
+                        <TableCell align="right">{row.eventType ?? 'N/A'}</TableCell>
+                    </TableRow>
+                ))
+            }
         </TableBody>
     )
 }
@@ -64,6 +75,9 @@ function TableBodyWidget(props: TableProps) {
 function MainTable(props: TableProps) {
     const [asc, setAsc] = useState<boolean>(false)
     const [data, setData] = useState<GetEvents[]>(props.data);
+    const [pageNum, setPageNum] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+
 
     const onClickHandler = (sortBirthDate = true) => {
         const sortDates = [...props.data]
@@ -76,20 +90,40 @@ function MainTable(props: TableProps) {
         setData(sortDates)
     }
 
+    const onNumberOfPageChange = (e: unknown, newPage: number) => {
+        setPageNum(newPage)
+    }
+
+    const handleOnRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(+event.target.value);
+        setPageNum(0);
+    };
+
     useEffect(() => {
         setData(props.data)
     }, [props.data])
 
     return (
-        <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader size="medium" sx={{
-                display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
-            }} >
-                <TableHeaderWidget asc={asc} onClickHandler={() => onClickHandler(false)} />
-                <TableBodyWidget data={data} />
-            </Table >
-        </TableContainer>
+        <>
+            <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader size="medium" sx={{
+                    display: 'flex-col', alignItems: 'center', justifyContent: 'center', maxHeight: '200px'
+                }} >
+                    <TableHeaderWidget asc={asc} onClickHandler={() => onClickHandler(false)} />
+                    <TableBodyWidget data={data} rowsPerPage={rowsPerPage} pageNum={pageNum} />
+                </Table >
 
+                <TablePagination
+                    component="div"
+                    rowsPerPage={rowsPerPage}
+                    rowsPerPageOptions={[3, 5, 10, { label: 'All', value: -1 }]}
+                    count={data.length}
+                    page={pageNum}
+                    onPageChange={onNumberOfPageChange}
+                    onRowsPerPageChange={handleOnRowsPerPageChange}
+                />
+            </TableContainer >
+        </>
     )
 }
 
