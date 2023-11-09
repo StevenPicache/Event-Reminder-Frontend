@@ -1,6 +1,6 @@
 # Project Title
 
-Purpose of this project is to show understanding of React, Redux Toolkit and learning RTK Query rather than functionality
+Purpose of this project is to show understanding of React, Redux Toolkit and learning RTK Query.
 
 ## Features
 
