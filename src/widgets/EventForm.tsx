@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Avatar, Container, Paper, Typography } from '@mui/material';
+import { Avatar, Container, Menu, MenuItem, Paper, Typography } from '@mui/material';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
@@ -96,7 +96,6 @@ function DatePickerWidget(props: DatePickerProps) {
     )
 }
 
-
 function AddEventButton({ buttonName }: { buttonName: string }) {
     return (
         <Button
@@ -109,6 +108,9 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
         </Button>
     )
 }
+
+/// TODO: Add drop down of event types
+
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
