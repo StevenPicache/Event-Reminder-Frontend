@@ -32,6 +32,7 @@ A small project to showcase my knowledge and skillsets
 Install my-project with npm
 
 ```bash
+  git clone https://github.com/StevenPicache/Event-Reminder-Frontend.git
   cd Event-Reminder-Frontend
   npm install 
   npm run start
