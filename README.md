@@ -1,7 +1,5 @@
 
-# Project Title
-
-A small project to showcase my knowledge and skillsets
+# Event-Reminder-Frontend
 
 ## Features
 
