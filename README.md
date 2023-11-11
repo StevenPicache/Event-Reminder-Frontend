@@ -1,6 +1,7 @@
-# Project Title
+# Event-Reminder
+# Status - Work-in-progress
 
-Purpose of this project is to show understanding of React, Redux Toolkit and learning RTK Query.
+The purpose of this project is to show understanding of React, Redux Toolkit and to learn RTK Query.
 
 ## Features
 
