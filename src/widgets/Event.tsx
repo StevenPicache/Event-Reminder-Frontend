@@ -91,6 +91,7 @@ function EventsWidget() {
                     searchOnChange={searchOnChange}
                     clearTextField={clearTextField}
                 />
+
                 <TableWidget data={allData} />
             </>
         )

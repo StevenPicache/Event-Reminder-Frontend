@@ -5,10 +5,7 @@ import TextField from '@mui/material/TextField'
 import {
     Avatar,
     Container,
-    FormControl,
-    MenuItem,
     Paper,
-    Select,
     SelectChangeEvent,
     Typography,
 } from '@mui/material'
@@ -25,6 +22,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PostEvents } from '../types/event'
 import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types'
 import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers'
+import SelectDropDown from '../common/select_dropdown'
 
 function FormIcon() {
     return (
@@ -138,26 +136,34 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
-    const eventSelectInitState = 'other'
+    const eventSelectInitState = 'Other'
+    const optionsList = [
+        eventSelectInitState,
+        'Birthday',
+        'Wedding Anniversary',
+        'Graduation',
+    ]
+
     const [first_name, setFirstName] = useState<string>('')
     const [last_name, setLastName] = useState<string>('')
     const [event_type_select, setSelectEventType] =
         useState<string>(eventSelectInitState)
     const [event_type, setEventType] = useState<string>('')
     const [date, setDate] = useState<dayjs.Dayjs | null>(null)
+    const [error, setError] = useState<string>('')
 
     const [firstNameError, setFirstNameError] = useState<boolean>(false)
     const [lastNameError, setLastNameError] = useState<boolean>(false)
     const [eventTypeError, setEventTypeError] = useState<boolean>(false)
     const [dateError, setDateError] = useState<boolean>(false)
 
-    const [error, setError] = useState<string>('')
-
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
             const event =
-                event_type_select === 'other' ? event_type : event_type_select
+                event_type_select === eventSelectInitState
+                    ? event_type
+                    : event_type_select
             if (first_name && last_name && event && date != null) {
                 const data: PostEvents = {
                     firstName: first_name,
@@ -186,7 +192,10 @@ function AddEventWidget() {
             setLastNameError(true)
         }
 
-        if (event_type_select === 'other' && event_type.length === 0) {
+        if (
+            event_type_select === eventSelectInitState &&
+            event_type.length === 0
+        ) {
             setEventTypeError(true)
         }
         if (date === null) {
@@ -210,7 +219,7 @@ function AddEventWidget() {
     }
 
     const selectEventType = (e: SelectChangeEvent<string>) => {
-        if (e.target.value !== 'other') {
+        if (e.target.value !== eventSelectInitState) {
             setEventType('')
         }
         setSelectEventType(e.target.value)
@@ -267,41 +276,17 @@ function AddEventWidget() {
                         </Grid>
 
                         <Grid item xs={12} sm={5}>
-                            <FormControl
-                                sx={{
-                                    width: '100%',
-                                }}
-                                error={eventTypeError}
-                                color="error"
-                            >
-                                <Select
-                                    onClick={() => setEventTypeError(false)}
-                                    placeholder="other"
-                                    labelId="select-label"
-                                    id="select-label"
-                                    value={event_type_select}
-                                    onChange={selectEventType}
-                                    onClose={() => setEventTypeError(false)}
-                                >
-                                    <MenuItem value="other">Other</MenuItem>
-                                    <MenuItem value={'Birthay'}>
-                                        Birthday
-                                    </MenuItem>
-                                    <MenuItem value={'Wedding Anniversary'}>
-                                        Wedding Anniversary
-                                    </MenuItem>
-                                    <MenuItem value={'Graduation'}>
-                                        Graduation
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
+                            <SelectDropDown
+                                options={optionsList}
+                                selectValue={event_type_select}
+                                errorValue={eventTypeError}
+                                selectOnChange={selectEventType}
+                                selectOnClick={() => setEventTypeError(false)}
+                            />
                         </Grid>
 
                         <Grid item xs={12} sm={7}>
                             <TextFieldWidget
-                                disabled={
-                                    event_type_select === 'other' ? false : true
-                                }
                                 id="event-type"
                                 name="eventType"
                                 label="Type event name"
@@ -311,6 +296,11 @@ function AddEventWidget() {
                                     setEventType(e.target.value)
                                 }
                                 onChangeError={() => setEventTypeError(false)}
+                                disabled={
+                                    event_type_select === eventSelectInitState
+                                        ? false
+                                        : true
+                                }
                             />
                         </Grid>
 

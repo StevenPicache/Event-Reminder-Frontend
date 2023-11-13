@@ -167,33 +167,31 @@ function MainTable(props: TableProps) {
             : data
 
     return (
-        <>
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table
-                    stickyHeader
-                    size="medium"
-                    sx={{
-                        display: 'flex-col',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        maxHeight: '200px',
-                    }}
-                >
-                    <TableHeaderWidget
-                        asc={asc}
-                        onClickHandler={() => onClickHandler(false)}
-                    />
-                    <TableBodyWidget data={newData} />
-                    <TableFooterWidget
-                        data={data}
-                        rowsPerPage={rowsPerPage}
-                        pageNum={pageNum}
-                        onPageChange={onNumberOfPageChange}
-                        onRowsPerPageChange={handleOnRowsPerPageChange}
-                    />
-                </Table>
-            </TableContainer>
-        </>
+        <TableContainer sx={{ maxHeight: 440 }}>
+            <Table
+                stickyHeader
+                size="medium"
+                sx={{
+                    display: 'flex-col',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    maxHeight: '200px',
+                }}
+            >
+                <TableHeaderWidget
+                    asc={asc}
+                    onClickHandler={() => onClickHandler(false)}
+                />
+                <TableBodyWidget data={newData} />
+                <TableFooterWidget
+                    data={data}
+                    rowsPerPage={rowsPerPage}
+                    pageNum={pageNum}
+                    onPageChange={onNumberOfPageChange}
+                    onRowsPerPageChange={handleOnRowsPerPageChange}
+                />
+            </Table>
+        </TableContainer>
     )
 }
 
