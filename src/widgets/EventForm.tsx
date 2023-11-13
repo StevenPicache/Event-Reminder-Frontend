@@ -1,26 +1,33 @@
-import * as React from 'react';
-import { useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { Avatar, Container, Menu, MenuItem, Paper, Typography } from '@mui/material';
+import * as React from 'react'
+import { useState } from 'react'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import {
+    Avatar,
+    Container,
+    Menu,
+    MenuItem,
+    Paper,
+    Typography,
+} from '@mui/material'
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs, } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useAppSelector } from '../hooks';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import { Event } from '@mui/icons-material';
-import { Main } from '../constants/drawerStyles';
-import { useAddEventsMutation } from '../store/endpoint/event';
-import dayjs, { Dayjs } from 'dayjs';
-import { PostEvents } from '../types/event';
-import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
-import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { useAppSelector } from '../hooks'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import { Event } from '@mui/icons-material'
+import { Main } from '../constants/drawerStyles'
+import { useAddEventsMutation } from '../store/endpoint/event'
+import dayjs, { Dayjs } from 'dayjs'
+import { PostEvents } from '../types/event'
+import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types'
+import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers'
 
 function FormIcon() {
     return (
-        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }} >
+        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
             <Event />
         </Avatar>
     )
@@ -32,11 +39,7 @@ type ErrorMessageProps = {
 }
 function DisplayErrorMessage(props: ErrorMessageProps) {
     const { isError, errorMessage } = props
-    return (
-        <Typography>
-            {isError ? errorMessage : ''}
-        </Typography>
-    )
+    return <Typography>{isError ? errorMessage : ''}</Typography>
 }
 
 type TextFieldProps = {
@@ -45,13 +48,22 @@ type TextFieldProps = {
     label: string
     autofocus?: boolean
     value: string
-    errorValue?: boolean,
+    errorValue?: boolean
     onChangeText?: React.ChangeEventHandler<HTMLInputElement>
     onChangeError?: React.MouseEventHandler<HTMLDivElement>
 }
 
 function TextFieldWidget(props: TextFieldProps) {
-    const { id, name, label, autofocus, value, errorValue, onChangeText, onChangeError } = props
+    const {
+        id,
+        name,
+        label,
+        autofocus,
+        value,
+        errorValue,
+        onChangeText,
+        onChangeError,
+    } = props
     return (
         <TextField
             id={id}
@@ -64,28 +76,38 @@ function TextFieldWidget(props: TextFieldProps) {
             onClick={onChangeError}
             required
             fullWidth
-
         />
     )
 }
 
-
 type DatePickerProps = {
     dateError: boolean
     value: dayjs.Dayjs | null
-    onChangeDate?: ((value: Dayjs | null, context: PickerChangeHandlerContext<DateValidationError>) => void)
-    onChangeSelection?: ((newValue: FieldSelectedSections) => void)
+    onChangeDate?: (
+        value: Dayjs | null,
+        context: PickerChangeHandlerContext<DateValidationError>,
+    ) => void
+    onChangeSelection?: (newValue: FieldSelectedSections) => void
 }
 function DatePickerWidget(props: DatePickerProps) {
     const { dateError, value, onChangeDate, onChangeSelection } = props
     return (
         <Grid item xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box width={'100%'} sx={{ border: dateError ? 1 : 0, borderColor: dateError ? 'red' : '', }}>
+                <Box
+                    width={'100%'}
+                    sx={{
+                        border: dateError ? 1 : 0,
+                        borderColor: dateError ? 'red' : '',
+                    }}
+                >
                     <DatePicker
                         label="Date"
-                        sx={{ backgroundColor: (theme) => theme.palette.grey[200], width: '100%' }}
-                        format='MM-D-YYYY'
+                        sx={{
+                            backgroundColor: (theme) => theme.palette.grey[200],
+                            width: '100%',
+                        }}
+                        format="MM-D-YYYY"
                         value={value}
                         onChange={onChangeDate}
                         onSelectedSectionsChange={onChangeSelection}
@@ -102,7 +124,7 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
             sx={{ mt: 5, mb: 2 }}
             fullWidth
             variant="contained"
-            type='submit'
+            type="submit"
         >
             {buttonName}
         </Button>
@@ -114,34 +136,31 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
-    const [first_name, setFirstName] = useState<string>('');
-    const [last_name, setLastName] = useState<string>('');
-    const [event_type, setEventType] = useState<string>('');
-    const [date, setDate] = useState<dayjs.Dayjs | null>(null);
+    const [first_name, setFirstName] = useState<string>('')
+    const [last_name, setLastName] = useState<string>('')
+    const [event_type, setEventType] = useState<string>('')
+    const [date, setDate] = useState<dayjs.Dayjs | null>(null)
 
-    const [firstNameError, setFirstNameError] = useState<boolean>(false);
-    const [lastNameError, setLastNameError] = useState<boolean>(false);
-    const [eventTypeError, setEventTypeError] = useState<boolean>(false);
-    const [dateError, setDateError] = useState<boolean>(false);
+    const [firstNameError, setFirstNameError] = useState<boolean>(false)
+    const [lastNameError, setLastNameError] = useState<boolean>(false)
+    const [eventTypeError, setEventTypeError] = useState<boolean>(false)
+    const [dateError, setDateError] = useState<boolean>(false)
 
-    const [error, setError] = useState<string>('');
-
+    const [error, setError] = useState<string>('')
 
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-
             if (first_name && last_name && event_type && date != null) {
                 const data: PostEvents = {
                     firstName: first_name,
                     lastName: last_name,
                     eventType: event_type,
-                    eventDate: date.toDate()
+                    eventDate: date.toDate(),
                 }
                 await addCelebration(data).unwrap()
                 clearFields()
                 clearErrors()
-
             } else {
                 setErrorState()
             }
@@ -198,7 +217,12 @@ function AddEventWidget() {
                 <DisplayErrorMessage isError={isError} errorMessage={error} />
                 <FormIcon />
 
-                <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={submitForm}>
+                <Box
+                    component="form"
+                    noValidate
+                    sx={{ mt: 3 }}
+                    onSubmit={submitForm}
+                >
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextFieldWidget
@@ -208,7 +232,9 @@ function AddEventWidget() {
                                 autofocus={true}
                                 value={first_name}
                                 errorValue={firstNameError}
-                                onChangeText={(e) => setFirstName(e.target.value)}
+                                onChangeText={(e) =>
+                                    setFirstName(e.target.value)
+                                }
                                 onChangeError={() => setFirstNameError(false)}
                             />
                         </Grid>
@@ -220,7 +246,9 @@ function AddEventWidget() {
                                 label="Last Name"
                                 value={last_name}
                                 errorValue={lastNameError}
-                                onChangeText={(e) => setLastName(e.target.value)}
+                                onChangeText={(e) =>
+                                    setLastName(e.target.value)
+                                }
                                 onChangeError={() => setLastNameError(false)}
                             />
                         </Grid>
@@ -232,7 +260,9 @@ function AddEventWidget() {
                                 label="Event Type"
                                 value={event_type}
                                 errorValue={eventTypeError}
-                                onChangeText={(e) => setEventType(e.target.value)}
+                                onChangeText={(e) =>
+                                    setEventType(e.target.value)
+                                }
                                 onChangeError={() => setEventTypeError(false)}
                             />
                         </Grid>
@@ -248,23 +278,33 @@ function AddEventWidget() {
                     <AddEventButton buttonName={'Add Event'} />
                 </Box>
             </Box>
-        </Container >
+        </Container>
     )
 }
 
 export default function EventForm() {
-    const drawerState = useAppSelector((state) => state.eventReducer.drawerState)
+    const drawerState = useAppSelector(
+        (state) => state.eventReducer.drawerState,
+    )
 
     return (
-        <Main open={drawerState} sx={{
-            py: 10,
-        }}>
-            <Paper sx={{
-                px: 5, py: 2, display: 'flex', flexDirection: 'column',
-                backgroundColor: (theme) => theme.palette.grey[200],
-                borderRadius: (theme) => theme.spacing(2),
-                overflow: 'hidden'
-            }} >
+        <Main
+            open={drawerState}
+            sx={{
+                py: 10,
+            }}
+        >
+            <Paper
+                sx={{
+                    px: 5,
+                    py: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: (theme) => theme.palette.grey[200],
+                    borderRadius: (theme) => theme.spacing(2),
+                    overflow: 'hidden',
+                }}
+            >
                 <Box
                     sx={{
                         overflow: 'auto',
@@ -273,7 +313,6 @@ export default function EventForm() {
                     <AddEventWidget />
                 </Box>
             </Paper>
-        </Main >
-    );
+        </Main>
+    )
 }
-

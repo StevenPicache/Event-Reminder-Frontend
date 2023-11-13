@@ -4,16 +4,16 @@ import { RootState } from '../store'
 const name = 'events'
 
 const initialState = {
-  drawerState: false,
+    drawerState: false,
 }
 export const eventSlice = createSlice({
-  name: name,
-  initialState: initialState,
-  reducers: {
-    setDrawerState: (state, action) => {
-      state.drawerState = action.payload
+    name: name,
+    initialState: initialState,
+    reducers: {
+        setDrawerState: (state, action) => {
+            state.drawerState = action.payload
+        },
     },
-  },
 })
 
 export const { setDrawerState } = eventSlice.actions
