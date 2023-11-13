@@ -14,7 +14,6 @@ import {
     Typography,
 } from '@mui/material'
 import { convertToLocaleDate } from '../helper/convertUtcToLocale'
-import { ArrowDropDown } from '@mui/icons-material'
 
 type TableProps = {
     data: GetEvents[]
@@ -31,14 +30,18 @@ function TableHeaderWidget(props: TableHeaderProps) {
         <TableHead>
             <TableRow>
                 <TableCell
-                    sx={{ backgroundColor: (theme) => theme.palette.grey[200] }}
+                    sx={{
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                    }}
                 >
                     <Typography>{'Name'}</Typography>
                 </TableCell>
 
                 <TableCell
                     align="center"
-                    sx={{ backgroundColor: (theme) => theme.palette.grey[200] }}
+                    sx={{
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                    }}
                 >
                     <TableSortLabel
                         direction={asc ? 'asc' : 'desc'}
@@ -50,7 +53,9 @@ function TableHeaderWidget(props: TableHeaderProps) {
 
                 <TableCell
                     align="right"
-                    sx={{ backgroundColor: (theme) => theme.palette.grey[200] }}
+                    sx={{
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                    }}
                 >
                     <TableSortLabel direction={asc ? 'asc' : 'desc'}>
                         <Typography>{'Event name'}</Typography>
@@ -63,23 +68,13 @@ function TableHeaderWidget(props: TableHeaderProps) {
 
 type TableBodyProps = {
     data: GetEvents[]
-    rowsPerPage: number
-    pageNum: number
 }
 
 function TableBodyWidget(props: TableBodyProps) {
-    const { data, rowsPerPage, pageNum } = props
-    const newData =
-        rowsPerPage > 0
-            ? data.slice(
-                  pageNum * rowsPerPage,
-                  pageNum * rowsPerPage + rowsPerPage,
-              )
-            : data
-
+    const { data } = props
     return (
         <TableBody>
-            {newData.map((row, index) => (
+            {data.map((row, index) => (
                 <TableRow
                     hover
                     key={index}
@@ -100,6 +95,32 @@ function TableBodyWidget(props: TableBodyProps) {
                 </TableRow>
             ))}
         </TableBody>
+    )
+}
+
+type TableFooterProps = {
+    data: GetEvents[]
+    rowsPerPage: number
+    pageNum: number
+    onPageChange: (e: unknown, newPage: number) => void
+    onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+function TableFooterWidget(props: TableFooterProps) {
+    const { data, rowsPerPage, pageNum, onPageChange, onRowsPerPageChange } =
+        props
+    const pageOptions = [1, 3, 5, { label: 'All', value: -1 }]
+
+    return (
+        <TableFooter>
+            <TablePagination
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={pageOptions}
+                count={data.length}
+                page={pageNum}
+                onPageChange={onPageChange}
+                onRowsPerPageChange={onRowsPerPageChange}
+            />
+        </TableFooter>
     )
 }
 
@@ -137,6 +158,14 @@ function MainTable(props: TableProps) {
         setData(props.data)
     }, [props.data])
 
+    const newData =
+        rowsPerPage > 0
+            ? data.slice(
+                  pageNum * rowsPerPage,
+                  pageNum * rowsPerPage + rowsPerPage,
+              )
+            : data
+
     return (
         <>
             <TableContainer sx={{ maxHeight: 440 }}>
@@ -154,22 +183,15 @@ function MainTable(props: TableProps) {
                         asc={asc}
                         onClickHandler={() => onClickHandler(false)}
                     />
-                    <TableBodyWidget
+                    <TableBodyWidget data={newData} />
+                    <TableFooterWidget
                         data={data}
                         rowsPerPage={rowsPerPage}
                         pageNum={pageNum}
+                        onPageChange={onNumberOfPageChange}
+                        onRowsPerPageChange={handleOnRowsPerPageChange}
                     />
                 </Table>
-
-                <TablePagination
-                    component="div"
-                    rowsPerPage={rowsPerPage}
-                    rowsPerPageOptions={[3, 5, 10, { label: 'All', value: -1 }]}
-                    count={data.length}
-                    page={pageNum}
-                    onPageChange={onNumberOfPageChange}
-                    onRowsPerPageChange={handleOnRowsPerPageChange}
-                />
             </TableContainer>
         </>
     )

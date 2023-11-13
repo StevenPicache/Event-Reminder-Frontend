@@ -5,12 +5,13 @@ import TextField from '@mui/material/TextField'
 import {
     Avatar,
     Container,
-    Menu,
+    FormControl,
     MenuItem,
     Paper,
+    Select,
+    SelectChangeEvent,
     Typography,
 } from '@mui/material'
-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -47,6 +48,7 @@ type TextFieldProps = {
     name: string
     label: string
     autofocus?: boolean
+    disabled?: boolean
     value: string
     errorValue?: boolean
     onChangeText?: React.ChangeEventHandler<HTMLInputElement>
@@ -59,6 +61,7 @@ function TextFieldWidget(props: TextFieldProps) {
         name,
         label,
         autofocus,
+        disabled,
         value,
         errorValue,
         onChangeText,
@@ -66,6 +69,7 @@ function TextFieldWidget(props: TextFieldProps) {
     } = props
     return (
         <TextField
+            disabled={disabled ?? false}
             id={id}
             name={name}
             label={label}
@@ -131,13 +135,14 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
     )
 }
 
-/// TODO: Add drop down of event types
-
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
+    const eventSelectInitState = 'other'
     const [first_name, setFirstName] = useState<string>('')
     const [last_name, setLastName] = useState<string>('')
+    const [event_type_select, setSelectEventType] =
+        useState<string>(eventSelectInitState)
     const [event_type, setEventType] = useState<string>('')
     const [date, setDate] = useState<dayjs.Dayjs | null>(null)
 
@@ -151,11 +156,13 @@ function AddEventWidget() {
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-            if (first_name && last_name && event_type && date != null) {
+            const event =
+                event_type_select === 'other' ? event_type : event_type_select
+            if (first_name && last_name && event && date != null) {
                 const data: PostEvents = {
                     firstName: first_name,
                     lastName: last_name,
-                    eventType: event_type,
+                    eventType: event,
                     eventDate: date.toDate(),
                 }
                 await addCelebration(data).unwrap()
@@ -164,10 +171,8 @@ function AddEventWidget() {
             } else {
                 setErrorState()
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
-            /// TODO / TECH DEBT: Handle error properly without using type any
-            setError(e.error)
+        } catch (e: unknown) {
+            setError('Failed on adding the event')
             console.log(e)
         }
     }
@@ -181,7 +186,7 @@ function AddEventWidget() {
             setLastNameError(true)
         }
 
-        if (event_type.length === 0) {
+        if (event_type_select === 'other' && event_type.length === 0) {
             setEventTypeError(true)
         }
         if (date === null) {
@@ -192,6 +197,7 @@ function AddEventWidget() {
     const clearFields = () => {
         setFirstName('')
         setLastName('')
+        setSelectEventType(eventSelectInitState)
         setEventType('')
         setDate(null)
     }
@@ -201,6 +207,13 @@ function AddEventWidget() {
         setLastNameError(false)
         setEventTypeError(false)
         setDateError(false)
+    }
+
+    const selectEventType = (e: SelectChangeEvent<string>) => {
+        if (e.target.value !== 'other') {
+            setEventType('')
+        }
+        setSelectEventType(e.target.value)
     }
 
     return (
@@ -253,11 +266,45 @@ function AddEventWidget() {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={5}>
+                            <FormControl
+                                sx={{
+                                    width: '100%',
+                                }}
+                                error={eventTypeError}
+                                color="error"
+                            >
+                                <Select
+                                    onClick={() => setEventTypeError(false)}
+                                    placeholder="other"
+                                    labelId="select-label"
+                                    id="select-label"
+                                    value={event_type_select}
+                                    onChange={selectEventType}
+                                    onClose={() => setEventTypeError(false)}
+                                >
+                                    <MenuItem value="other">Other</MenuItem>
+                                    <MenuItem value={'Birthay'}>
+                                        Birthday
+                                    </MenuItem>
+                                    <MenuItem value={'Wedding Anniversary'}>
+                                        Wedding Anniversary
+                                    </MenuItem>
+                                    <MenuItem value={'Graduation'}>
+                                        Graduation
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} sm={7}>
                             <TextFieldWidget
+                                disabled={
+                                    event_type_select === 'other' ? false : true
+                                }
                                 id="event-type"
                                 name="eventType"
-                                label="Event Type"
+                                label="Type event name"
                                 value={event_type}
                                 errorValue={eventTypeError}
                                 onChangeText={(e) =>
@@ -286,7 +333,6 @@ export default function EventForm() {
     const drawerState = useAppSelector(
         (state) => state.eventReducer.drawerState,
     )
-
     return (
         <Main
             open={drawerState}
