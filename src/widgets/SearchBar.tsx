@@ -20,7 +20,6 @@ export function SearchBar(props: EventSearchBar) {
         <FormControl variant="filled">
             <InputLabel htmlFor="clear-search-bar">Search Event</InputLabel>
             <OutlinedInput
-                autoFocus
                 value={searchTerm}
                 onChange={searchOnChange}
                 id="clear-search-bar"
