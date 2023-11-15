@@ -15,15 +15,10 @@ import {
 } from '@mui/material'
 import { convertToLocaleDate } from '../helper/convertUtcToLocale'
 
-type TableProps = {
-    data: GetEvents[]
-}
-
 type TableHeaderProps = {
     asc: boolean
     onClickHandler: React.MouseEventHandler<HTMLSpanElement>
 }
-
 function TableHeaderWidget(props: TableHeaderProps) {
     const { asc, onClickHandler } = props
     return (
@@ -66,11 +61,7 @@ function TableHeaderWidget(props: TableHeaderProps) {
     )
 }
 
-type TableBodyProps = {
-    data: GetEvents[]
-}
-
-function TableBodyWidget(props: TableBodyProps) {
+function TableBodyWidget(props: TableDataProps) {
     const { data } = props
     return (
         <TableBody>
@@ -105,6 +96,7 @@ type TableFooterProps = {
     onPageChange: (e: unknown, newPage: number) => void
     onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
+
 function TableFooterWidget(props: TableFooterProps) {
     const { data, rowsPerPage, pageNum, onPageChange, onRowsPerPageChange } =
         props
@@ -112,19 +104,21 @@ function TableFooterWidget(props: TableFooterProps) {
 
     return (
         <TableFooter>
-            <TablePagination
-                rowsPerPage={rowsPerPage}
-                rowsPerPageOptions={pageOptions}
-                count={data.length}
-                page={pageNum}
-                onPageChange={onPageChange}
-                onRowsPerPageChange={onRowsPerPageChange}
-            />
+            <TableRow>
+                <TablePagination
+                    rowsPerPage={rowsPerPage}
+                    rowsPerPageOptions={pageOptions}
+                    count={data.length}
+                    page={pageNum}
+                    onPageChange={onPageChange}
+                    onRowsPerPageChange={onRowsPerPageChange}
+                />
+            </TableRow>
         </TableFooter>
     )
 }
 
-function MainTable(props: TableProps) {
+function MainTable(props: TableDataProps) {
     const [asc, setAsc] = useState<boolean>(false)
     const [data, setData] = useState<GetEvents[]>(props.data)
     const [pageNum, setPageNum] = useState<number>(0)
@@ -143,11 +137,11 @@ function MainTable(props: TableProps) {
         setData(sortDates)
     }
 
-    const onNumberOfPageChange = (e: unknown, newPage: number) => {
+    const onPageChange = (e: unknown, newPage: number) => {
         setPageNum(newPage)
     }
 
-    const handleOnRowsPerPageChange = (
+    const onRowsPerPageChange = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
         setRowsPerPage(+event.target.value)
@@ -167,37 +161,40 @@ function MainTable(props: TableProps) {
             : data
 
     return (
-        <>
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table
-                    stickyHeader
-                    size="medium"
-                    sx={{
-                        display: 'flex-col',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        maxHeight: '200px',
-                    }}
-                >
-                    <TableHeaderWidget
-                        asc={asc}
-                        onClickHandler={() => onClickHandler(false)}
-                    />
-                    <TableBodyWidget data={newData} />
-                    <TableFooterWidget
-                        data={data}
-                        rowsPerPage={rowsPerPage}
-                        pageNum={pageNum}
-                        onPageChange={onNumberOfPageChange}
-                        onRowsPerPageChange={handleOnRowsPerPageChange}
-                    />
-                </Table>
-            </TableContainer>
-        </>
+        <TableContainer sx={{ maxHeight: 440 }}>
+            <Table
+                stickyHeader
+                size="medium"
+                sx={{
+                    display: 'flex-col',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    maxHeight: '200px',
+                }}
+            >
+                <TableHeaderWidget
+                    asc={asc}
+                    onClickHandler={() => onClickHandler(false)}
+                />
+                <TableBodyWidget data={newData} />
+
+                <TableFooterWidget
+                    data={data}
+                    rowsPerPage={rowsPerPage}
+                    pageNum={pageNum}
+                    onPageChange={onPageChange}
+                    onRowsPerPageChange={onRowsPerPageChange}
+                />
+            </Table>
+        </TableContainer>
     )
 }
 
-export function TableWidget(props: TableProps) {
+type TableDataProps = {
+    data: GetEvents[]
+}
+
+export function TableWidget(props: TableDataProps) {
     const { data } = props
     return (
         <Box

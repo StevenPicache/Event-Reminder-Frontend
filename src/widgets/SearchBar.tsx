@@ -5,21 +5,30 @@ import {
     FormControl,
     IconButton,
     InputAdornment,
-    InputLabel,
     OutlinedInput,
 } from '@mui/material'
 
 type EventSearchBar = {
     searchTerm: string
+    disable?: boolean
     searchOnChange?: React.ChangeEventHandler<HTMLInputElement>
     clearTextField?: React.MouseEventHandler<HTMLButtonElement>
 }
 export function SearchBar(props: EventSearchBar) {
-    const { searchTerm, searchOnChange, clearTextField } = props
+    const { searchTerm, disable, searchOnChange, clearTextField } = props
     return (
-        <FormControl variant="filled">
-            <InputLabel htmlFor="clear-search-bar">Search Event</InputLabel>
+        <FormControl
+            variant="filled"
+            sx={{
+                width: '100%',
+                minWidth: 120,
+                mr: 2,
+            }}
+        >
             <OutlinedInput
+                autoFocus
+                disabled={disable}
+                placeholder="Search Event"
                 value={searchTerm}
                 onChange={searchOnChange}
                 id="clear-search-bar"
