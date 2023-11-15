@@ -136,7 +136,7 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
-    const eventSelectInitState = 'Other'
+    const eventSelectInitState = 'None'
     const optionsList = [
         eventSelectInitState,
         'Birthday',
@@ -146,8 +146,7 @@ function AddEventWidget() {
 
     const [first_name, setFirstName] = useState<string>('')
     const [last_name, setLastName] = useState<string>('')
-    const [event_type_select, setSelectEventType] =
-        useState<string>(eventSelectInitState)
+    const [event_type_select, setSelectEventType] = useState<string>('')
     const [event_type, setEventType] = useState<string>('')
     const [date, setDate] = useState<dayjs.Dayjs | null>(null)
     const [error, setError] = useState<string>('')
@@ -161,9 +160,7 @@ function AddEventWidget() {
         event.preventDefault()
         try {
             const event =
-                event_type_select === eventSelectInitState
-                    ? event_type
-                    : event_type_select
+                event_type_select.length === 0 ? event_type : event_type_select
             if (first_name && last_name && event && date != null) {
                 const data: PostEvents = {
                     firstName: first_name,
@@ -171,6 +168,7 @@ function AddEventWidget() {
                     eventType: event,
                     eventDate: date.toDate(),
                 }
+
                 await addCelebration(data).unwrap()
                 clearFields()
                 clearErrors()
@@ -184,6 +182,9 @@ function AddEventWidget() {
     }
 
     const setErrorState = () => {
+        const eventTypeData =
+            event_type_select.length !== 0 ? event_type_select : event_type
+
         if (first_name.length === 0) {
             setFirstNameError(true)
         }
@@ -192,10 +193,7 @@ function AddEventWidget() {
             setLastNameError(true)
         }
 
-        if (
-            event_type_select === eventSelectInitState &&
-            event_type.length === 0
-        ) {
+        if (eventTypeData.length === 0) {
             setEventTypeError(true)
         }
         if (date === null) {
@@ -219,11 +217,15 @@ function AddEventWidget() {
     }
 
     const selectEventType = (e: SelectChangeEvent<string>) => {
-        if (e.target.value !== eventSelectInitState) {
+        if (e.target.value === eventSelectInitState) {
+            setSelectEventType('')
+        } else {
             setEventType('')
+            setSelectEventType(e.target.value)
         }
-        setSelectEventType(e.target.value)
     }
+
+    const disAbleEventField = event_type_select.length === 0 ? false : true
 
     return (
         <Container component="main" maxWidth="xs">
@@ -278,6 +280,7 @@ function AddEventWidget() {
                         <Grid item xs={12} sm={5}>
                             <SelectDropDown
                                 options={optionsList}
+                                selectLabel="Event type"
                                 selectValue={event_type_select}
                                 errorValue={eventTypeError}
                                 selectOnChange={selectEventType}
@@ -296,11 +299,7 @@ function AddEventWidget() {
                                     setEventType(e.target.value)
                                 }
                                 onChangeError={() => setEventTypeError(false)}
-                                disabled={
-                                    event_type_select === eventSelectInitState
-                                        ? false
-                                        : true
-                                }
+                                disabled={disAbleEventField}
                             />
                         </Grid>
 
