@@ -93,6 +93,7 @@ function EventsWidget() {
         setWeekRange(e.target.value)
         if (e.target.value === 'None') {
             setDisableSearchBar(false)
+            setWeekRange(SET_TO_EMPTY)
         } else {
             clearTextField()
             setDisableSearchBar(true)
