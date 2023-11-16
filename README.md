@@ -3,13 +3,15 @@
 # Status - Work-in-progress
 
 ## Purpose
-The purpose of this project is to show understanding of React, Redux Toolkit and to learn RTK Query.
+Show understanding of React, Redux Toolkit and learn RTK Query.
 
 ## Features
 
 - Add event
 - Event Table with Sorting
 - Search Event by names and event type
+- Search Event by week range
+
 
 ## Tech Stack
 
