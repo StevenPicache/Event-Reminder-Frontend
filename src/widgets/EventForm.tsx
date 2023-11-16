@@ -133,6 +133,22 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
     )
 }
 
+type EventFormData = {
+    firstName: string
+    lastName: string
+    eventSelectType: string
+    eventType: string
+    eventDate?: dayjs.Dayjs | null
+}
+
+type EventFormErrorState = {
+    firstNameError: boolean
+    lastNameError: boolean
+    eventSelectTypeError: boolean
+    eventTypeError: boolean
+    eventDateError: boolean
+}
+
 function AddEventWidget() {
     const [addCelebration, { isError }] = useAddEventsMutation()
 
@@ -144,29 +160,47 @@ function AddEventWidget() {
         'Graduation',
     ]
 
-    const [first_name, setFirstName] = useState<string>('')
-    const [last_name, setLastName] = useState<string>('')
-    const [event_type_select, setSelectEventType] = useState<string>('')
-    const [event_type, setEventType] = useState<string>('')
-    const [date, setDate] = useState<dayjs.Dayjs | null>(null)
-    const [error, setError] = useState<string>('')
+    const initialStateValue: EventFormData = {
+        firstName: '',
+        lastName: '',
+        eventSelectType: '',
+        eventType: '',
+        eventDate: null,
+    }
 
-    const [firstNameError, setFirstNameError] = useState<boolean>(false)
-    const [lastNameError, setLastNameError] = useState<boolean>(false)
-    const [eventTypeError, setEventTypeError] = useState<boolean>(false)
-    const [dateError, setDateError] = useState<boolean>(false)
+    const initialStateError: EventFormErrorState = {
+        firstNameError: false,
+        lastNameError: false,
+        eventSelectTypeError: false,
+        eventTypeError: false,
+        eventDateError: false,
+    }
+
+    const [eventFormData, setEventFormData] =
+        useState<EventFormData>(initialStateValue)
+
+    const [error, setError] = useState<EventFormErrorState>(initialStateError)
+
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
             const event =
-                event_type_select.length === 0 ? event_type : event_type_select
-            if (first_name && last_name && event && date != null) {
+                eventFormData.eventSelectType.length === 0
+                    ? eventFormData.eventType
+                    : eventFormData.eventSelectType
+            if (
+                eventFormData.firstName &&
+                eventFormData.lastName &&
+                event &&
+                eventFormData.eventDate != null
+            ) {
                 const data: PostEvents = {
-                    firstName: first_name,
-                    lastName: last_name,
+                    firstName: eventFormData.firstName,
+                    lastName: eventFormData.lastName,
                     eventType: event,
-                    eventDate: date.toDate(),
+                    eventDate: eventFormData.eventDate.toDate(),
                 }
 
                 await addCelebration(data).unwrap()
@@ -176,56 +210,59 @@ function AddEventWidget() {
                 setErrorState()
             }
         } catch (e: unknown) {
-            setError('Failed on adding the event')
+            setErrorMessage('Failed on adding the event')
             console.log(e)
         }
     }
 
     const setErrorState = () => {
         const eventTypeData =
-            event_type_select.length !== 0 ? event_type_select : event_type
+            eventFormData.eventSelectType.length === 0
+                ? eventFormData.eventType
+                : eventFormData.eventSelectType
 
-        if (first_name.length === 0) {
-            setFirstNameError(true)
+        if (eventFormData.firstName.length === 0) {
+            error.firstNameError = true
         }
 
-        if (last_name.length === 0) {
-            setLastNameError(true)
+        if (eventFormData.lastName.length === 0) {
+            error.lastNameError = true
+        }
+
+        if (eventFormData.eventDate === null) {
+            error.eventDateError = true
         }
 
         if (eventTypeData.length === 0) {
-            setEventTypeError(true)
+            error.eventSelectTypeError = true
+            error.eventTypeError = true
         }
-        if (date === null) {
-            setDateError(true)
-        }
+
+        setError({ ...error })
     }
 
     const clearFields = () => {
-        setFirstName('')
-        setLastName('')
-        setSelectEventType(eventSelectInitState)
-        setEventType('')
-        setDate(null)
+        setEventFormData(initialStateValue)
     }
 
     const clearErrors = () => {
-        setFirstNameError(false)
-        setLastNameError(false)
-        setEventTypeError(false)
-        setDateError(false)
+        setError(initialStateError)
     }
 
     const selectEventType = (e: SelectChangeEvent<string>) => {
         if (e.target.value === eventSelectInitState) {
-            setSelectEventType('')
+            setEventFormData({ ...eventFormData, eventSelectType: '' })
         } else {
-            setEventType('')
-            setSelectEventType(e.target.value)
+            setEventFormData({
+                ...eventFormData,
+                eventType: '',
+                eventSelectType: e.target.value,
+            })
         }
     }
 
-    const disAbleEventField = event_type_select.length === 0 ? false : true
+    const disAbleEventField =
+        eventFormData.eventSelectType.length === 0 ? false : true
 
     return (
         <Container component="main" maxWidth="xs">
@@ -238,7 +275,10 @@ function AddEventWidget() {
                     alignItems: 'center',
                 }}
             >
-                <DisplayErrorMessage isError={isError} errorMessage={error} />
+                <DisplayErrorMessage
+                    isError={isError}
+                    errorMessage={errorMessage}
+                />
                 <FormIcon />
 
                 <Box
@@ -254,12 +294,20 @@ function AddEventWidget() {
                                 id="firstName"
                                 label="First Name"
                                 autofocus={true}
-                                value={first_name}
-                                errorValue={firstNameError}
+                                value={eventFormData.firstName}
+                                errorValue={error.firstNameError}
                                 onChangeText={(e) =>
-                                    setFirstName(e.target.value)
+                                    setEventFormData({
+                                        ...eventFormData,
+                                        firstName: e.target.value,
+                                    })
                                 }
-                                onChangeError={() => setFirstNameError(false)}
+                                onChangeError={() =>
+                                    setError({
+                                        ...error,
+                                        firstNameError: false,
+                                    })
+                                }
                             />
                         </Grid>
 
@@ -268,12 +316,20 @@ function AddEventWidget() {
                                 id="lastName"
                                 name="lastName"
                                 label="Last Name"
-                                value={last_name}
-                                errorValue={lastNameError}
+                                value={eventFormData.lastName}
+                                errorValue={error.lastNameError}
                                 onChangeText={(e) =>
-                                    setLastName(e.target.value)
+                                    setEventFormData({
+                                        ...eventFormData,
+                                        lastName: e.target.value,
+                                    })
                                 }
-                                onChangeError={() => setLastNameError(false)}
+                                onChangeError={() =>
+                                    setError({
+                                        ...error,
+                                        lastNameError: false,
+                                    })
+                                }
                             />
                         </Grid>
 
@@ -281,10 +337,16 @@ function AddEventWidget() {
                             <SelectDropDown
                                 options={optionsList}
                                 selectLabel="Event type"
-                                selectValue={event_type_select}
-                                errorValue={eventTypeError}
+                                selectValue={eventFormData.eventSelectType}
+                                errorValue={error.eventSelectTypeError}
                                 selectOnChange={selectEventType}
-                                selectOnClick={() => setEventTypeError(false)}
+                                selectOnClick={() =>
+                                    setError({
+                                        ...error,
+                                        eventSelectTypeError: false,
+                                        eventTypeError: false,
+                                    })
+                                }
                             />
                         </Grid>
 
@@ -293,21 +355,36 @@ function AddEventWidget() {
                                 id="event-type"
                                 name="eventType"
                                 label="Type event name"
-                                value={event_type}
-                                errorValue={eventTypeError}
+                                value={eventFormData.eventType}
+                                errorValue={error.eventTypeError}
                                 onChangeText={(e) =>
-                                    setEventType(e.target.value)
+                                    setEventFormData({
+                                        ...eventFormData,
+                                        eventType: e.target.value,
+                                    })
                                 }
-                                onChangeError={() => setEventTypeError(false)}
+                                onChangeError={() =>
+                                    setError({
+                                        ...error,
+                                        eventTypeError: false,
+                                    })
+                                }
                                 disabled={disAbleEventField}
                             />
                         </Grid>
 
                         <DatePickerWidget
-                            dateError={dateError}
-                            value={date}
-                            onChangeDate={(e) => setDate(e)}
-                            onChangeSelection={() => setDateError(false)}
+                            dateError={error.eventDateError}
+                            value={eventFormData.eventDate ?? null}
+                            onChangeDate={(e) =>
+                                setEventFormData({
+                                    ...eventFormData,
+                                    eventDate: e ?? null,
+                                })
+                            }
+                            onChangeSelection={() =>
+                                setError({ ...error, eventDateError: false })
+                            }
                         />
                     </Grid>
 
