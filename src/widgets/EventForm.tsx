@@ -17,12 +17,16 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import { Event } from '@mui/icons-material'
 import { Main } from '../constants/drawerStyles'
-import { useAddEventsMutation } from '../store/endpoint/event'
+import {
+    useAddEventsMutation,
+    useEditEventMutation,
+} from '../store/endpoint/event'
 import dayjs, { Dayjs } from 'dayjs'
-import { PostEvents } from '../types/event'
+import { EventFormData, EventFormErrorState, Events } from '../types/event'
 import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types'
 import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers'
 import SelectDropDown from '../common/select_dropdown'
+import { useLocation } from 'react-router-dom'
 
 function FormIcon() {
     return (
@@ -84,7 +88,7 @@ function TextFieldWidget(props: TextFieldProps) {
 
 type DatePickerProps = {
     dateError: boolean
-    value: dayjs.Dayjs | null
+    value?: Date | null
     onChangeDate?: (
         value: Dayjs | null,
         context: PickerChangeHandlerContext<DateValidationError>,
@@ -94,29 +98,27 @@ type DatePickerProps = {
 function DatePickerWidget(props: DatePickerProps) {
     const { dateError, value, onChangeDate, onChangeSelection } = props
     return (
-        <Grid item xs={12}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box
-                    width={'100%'}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Box
+                width={'100%'}
+                sx={{
+                    border: dateError ? 1 : 0,
+                    borderColor: dateError ? 'red' : '',
+                }}
+            >
+                <DatePicker
+                    label="Date"
                     sx={{
-                        border: dateError ? 1 : 0,
-                        borderColor: dateError ? 'red' : '',
+                        backgroundColor: (theme) => theme.palette.grey[200],
+                        width: '100%',
                     }}
-                >
-                    <DatePicker
-                        label="Date"
-                        sx={{
-                            backgroundColor: (theme) => theme.palette.grey[200],
-                            width: '100%',
-                        }}
-                        format="MM-D-YYYY"
-                        value={value}
-                        onChange={onChangeDate}
-                        onSelectedSectionsChange={onChangeSelection}
-                    />
-                </Box>
-            </LocalizationProvider>
-        </Grid>
+                    format="MM-D-YYYY"
+                    value={value ? dayjs(value) : null}
+                    onChange={onChangeDate}
+                    onSelectedSectionsChange={onChangeSelection}
+                />
+            </Box>
+        </LocalizationProvider>
     )
 }
 
@@ -133,24 +135,13 @@ function AddEventButton({ buttonName }: { buttonName: string }) {
     )
 }
 
-type EventFormData = {
-    firstName: string
-    lastName: string
-    eventSelectType: string
-    eventType: string
-    eventDate?: dayjs.Dayjs | null
+type AddEditEventProps = {
+    states: EventFormData
+    isEdit?: boolean
 }
-
-type EventFormErrorState = {
-    firstNameError: boolean
-    lastNameError: boolean
-    eventSelectTypeError: boolean
-    eventTypeError: boolean
-    eventDateError: boolean
-}
-
-function AddEventWidget() {
-    const [addCelebration, { isError }] = useAddEventsMutation()
+function AddEditEventWidget(props: AddEditEventProps) {
+    const [addCelebration, { isError: addEventError }] = useAddEventsMutation()
+    const [editEvent, { isError: editEventError }] = useEditEventMutation()
 
     const eventSelectInitState = 'None'
     const optionsList = [
@@ -160,14 +151,6 @@ function AddEventWidget() {
         'Graduation',
     ]
 
-    const initialStateValue: EventFormData = {
-        firstName: '',
-        lastName: '',
-        eventSelectType: '',
-        eventType: '',
-        eventDate: null,
-    }
-
     const initialStateError: EventFormErrorState = {
         firstNameError: false,
         lastNameError: false,
@@ -176,12 +159,25 @@ function AddEventWidget() {
         eventDateError: false,
     }
 
-    const [eventFormData, setEventFormData] =
-        useState<EventFormData>(initialStateValue)
+    const [eventFormData, setEventFormData] = useState<EventFormData>(
+        props.states,
+    )
 
     const [error, setError] = useState<EventFormErrorState>(initialStateError)
+    const [fetchErrorMessage, setFetchErrorMessage] = useState<string>('')
 
-    const [errorMessage, setErrorMessage] = useState<string>('')
+    const callEndPoint = async (data: Events) => {
+        console.log(data)
+        try {
+            if (props.isEdit) {
+                await editEvent(data).unwrap()
+            } else {
+                await addCelebration(data).unwrap()
+            }
+        } catch (e: unknown) {
+            console.error(e)
+        }
+    }
 
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -196,21 +192,22 @@ function AddEventWidget() {
                 event &&
                 eventFormData.eventDate != null
             ) {
-                const data: PostEvents = {
+                const data: Events = {
+                    eventId: props.isEdit ? eventFormData.eventId : undefined,
                     firstName: eventFormData.firstName,
                     lastName: eventFormData.lastName,
                     eventType: event,
-                    eventDate: eventFormData.eventDate.toDate(),
+                    eventDate: eventFormData.eventDate,
                 }
 
-                await addCelebration(data).unwrap()
+                callEndPoint(data)
                 clearFields()
                 clearErrors()
             } else {
                 setErrorState()
             }
         } catch (e: unknown) {
-            setErrorMessage('Failed on adding the event')
+            setFetchErrorMessage('Failed on adding the event')
             console.log(e)
         }
     }
@@ -242,7 +239,13 @@ function AddEventWidget() {
     }
 
     const clearFields = () => {
-        setEventFormData(initialStateValue)
+        setEventFormData({
+            firstName: '',
+            lastName: '',
+            eventSelectType: '',
+            eventType: '',
+            eventDate: null,
+        })
     }
 
     const clearErrors = () => {
@@ -276,8 +279,8 @@ function AddEventWidget() {
                 }}
             >
                 <DisplayErrorMessage
-                    isError={isError}
-                    errorMessage={errorMessage}
+                    isError={addEventError || editEventError}
+                    errorMessage={fetchErrorMessage}
                 />
                 <FormIcon />
 
@@ -373,19 +376,24 @@ function AddEventWidget() {
                             />
                         </Grid>
 
-                        <DatePickerWidget
-                            dateError={error.eventDateError}
-                            value={eventFormData.eventDate ?? null}
-                            onChangeDate={(e) =>
-                                setEventFormData({
-                                    ...eventFormData,
-                                    eventDate: e ?? null,
-                                })
-                            }
-                            onChangeSelection={() =>
-                                setError({ ...error, eventDateError: false })
-                            }
-                        />
+                        <Grid item xs={12}>
+                            <DatePickerWidget
+                                dateError={error.eventDateError}
+                                value={eventFormData.eventDate}
+                                onChangeDate={(e: Dayjs | null) =>
+                                    setEventFormData({
+                                        ...eventFormData,
+                                        eventDate: e?.toDate() ?? null,
+                                    })
+                                }
+                                onChangeSelection={() =>
+                                    setError({
+                                        ...error,
+                                        eventDateError: false,
+                                    })
+                                }
+                            />
+                        </Grid>
                     </Grid>
 
                     <AddEventButton buttonName={'Add Event'} />
@@ -396,6 +404,23 @@ function AddEventWidget() {
 }
 
 export default function EventForm() {
+    const location = useLocation()
+    let calledFromEdit = false
+    let initialStateValue: EventFormData = {
+        eventId: undefined,
+        firstName: '',
+        lastName: '',
+        eventSelectType: '',
+        eventType: '',
+        eventDate: null,
+    }
+
+    if (location.state !== null) {
+        const { formData } = location.state
+        initialStateValue = { ...formData }
+        calledFromEdit = true
+    }
+
     const drawerState = useAppSelector(
         (state) => state.eventReducer.drawerState,
     )
@@ -422,7 +447,10 @@ export default function EventForm() {
                         overflow: 'auto',
                     }}
                 >
-                    <AddEventWidget />
+                    <AddEditEventWidget
+                        isEdit={calledFromEdit}
+                        states={initialStateValue}
+                    />
                 </Box>
             </Paper>
         </Main>

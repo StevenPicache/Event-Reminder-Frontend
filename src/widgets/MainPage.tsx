@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import List from '@mui/material/List'
@@ -19,35 +19,32 @@ import {
 import { setDrawerState } from '../store/slice/event'
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { AppBar, drawerWidth } from '../constants/drawerStyles'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AddCircle, Event } from '@mui/icons-material'
-import EventForm from './EventForm'
-import Events from './Event'
-import { RoutePaths, listItems } from '../constants/routes'
+import { listItems } from '../constants/routes'
+import AppRoutes from '../AppRoutes'
 
 function DrawerOptionsHeader() {
     const theme = useTheme()
     const dispatch = useAppDispatch()
     return (
-        <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: theme.spacing(0, 1),
-                    ...theme.mixins.toolbar,
-                    justifyContent: 'flex-end',
-                }}
-            >
-                <IconButton onClick={() => dispatch(setDrawerState(false))}>
-                    {theme.direction === 'ltr' ? (
-                        <ChevronLeftIcon />
-                    ) : (
-                        <ChevronRightIcon />
-                    )}
-                </IconButton>
-            </Box>
-        </>
+        <Box
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: theme.spacing(0, 1),
+                ...theme.mixins.toolbar,
+                justifyContent: 'flex-end',
+            }}
+        >
+            <IconButton onClick={() => dispatch(setDrawerState(false))}>
+                {theme.direction === 'ltr' ? (
+                    <ChevronLeftIcon />
+                ) : (
+                    <ChevronRightIcon />
+                )}
+            </IconButton>
+        </Box>
     )
 }
 
@@ -90,7 +87,8 @@ function DrawerOptions() {
 type AppBarHeader = {
     state: boolean
 }
-function AppBarHeader({ state }: AppBarHeader) {
+function AppBarHeader(props: AppBarHeader) {
+    const { state } = props
     const dispatch = useAppDispatch()
     return (
         <AppBar position="fixed" open={state}>
@@ -134,11 +132,7 @@ export default function MainPageDrawer() {
                 <Divider />
                 <DrawerOptions />
             </Drawer>
-            <Routes>
-                <Route path={RoutePaths.default} Component={Events} />
-                <Route path={RoutePaths.Events} Component={Events} />
-                <Route path={RoutePaths.AddEvents} Component={EventForm} />
-            </Routes>
+            <AppRoutes />
         </Box>
     )
 }
