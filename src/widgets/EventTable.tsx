@@ -64,12 +64,11 @@ function EventsWidget() {
         '8 weeks',
         '16 weeks',
     ]
-    const SET_TO_EMPTY = ''
+
     let tableContent = null
 
     const [searchTerm, setSearchTerm] = useState<string>('')
     const [disableSearchBar, setDisableSearchBar] = useState<boolean>(false)
-    const [weekRange, setWeekRange] = useState<string>('')
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('')
     const debouncedSearch = useMemo(
         () =>
@@ -83,23 +82,6 @@ function EventsWidget() {
         debouncedSearch(value)
     }
 
-    const { data: allData = [], isError: allDataError } =
-        useSearchEventsQuery(debouncedSearchTerm)
-
-    const { data: weekRangeData = [], isError: weekRangeError } =
-        useWeekRangeEventsQuery(parseInt(weekRange))
-
-    const handleWeekChange = (e: SelectChangeEvent<string>) => {
-        setWeekRange(e.target.value)
-        if (e.target.value === 'None') {
-            setDisableSearchBar(false)
-            setWeekRange(SET_TO_EMPTY)
-        } else {
-            clearTextField()
-            setDisableSearchBar(true)
-        }
-    }
-
     const searchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value)
         handleDebounce(e.target.value)
@@ -110,7 +92,26 @@ function EventsWidget() {
         setSearchTerm('')
     }
 
-    const tableData = weekRangeData.length !== 0 ? weekRangeData : allData
+    const [dropDownValue, setDropDownValue] = useState<string>('')
+
+    const handleSelectDropDownOnChange = (e: SelectChangeEvent<string>) => {
+        if (e.target.value === 'None') {
+            setDisableSearchBar(false) /// coupled here
+            setDropDownValue('')
+        } else {
+            setDropDownValue(e.target.value)
+            clearTextField() /// coupled here
+            setDisableSearchBar(true) /// coupled here
+        }
+    }
+
+    const { data: searchBarData = [], isError: allDataError } =
+        useSearchEventsQuery(debouncedSearchTerm)
+
+    const { data: dropDownData = [], isError: weekRangeError } =
+        useWeekRangeEventsQuery(parseInt(dropDownValue))
+
+    const tableData = dropDownData.length !== 0 ? dropDownData : searchBarData
 
     if (allDataError || weekRangeError) {
         tableContent = (
@@ -147,8 +148,8 @@ function EventsWidget() {
                 <Box sx={{ width: '30%' }}>
                     <SelectDropDown
                         options={dropDownOptions}
-                        selectValue={weekRange}
-                        selectOnChange={handleWeekChange}
+                        selectValue={dropDownValue}
+                        selectOnChange={handleSelectDropDownOnChange}
                         selectLabel="Select week range"
                     />
                 </Box>
@@ -158,7 +159,7 @@ function EventsWidget() {
     )
 }
 
-export default function Events() {
+export default function EventsTable() {
     const drawerState = useAppSelector(
         (state) => state.eventReducer.drawerState,
     )

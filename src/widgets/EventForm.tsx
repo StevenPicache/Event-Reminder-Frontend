@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useState } from 'react'
 import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
 import {
     Avatar,
     Container,
@@ -9,9 +8,6 @@ import {
     SelectChangeEvent,
     Typography,
 } from '@mui/material'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useAppSelector } from '../hooks'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -21,12 +17,12 @@ import {
     useAddEventsMutation,
     useEditEventMutation,
 } from '../store/endpoint/event'
-import dayjs, { Dayjs } from 'dayjs'
+import { Dayjs } from 'dayjs'
 import { EventFormData, EventFormErrorState, Events } from '../types/event'
-import { PickerChangeHandlerContext } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types'
-import { DateValidationError, FieldSelectedSections } from '@mui/x-date-pickers'
 import SelectDropDown from '../common/select_dropdown'
 import { useLocation } from 'react-router-dom'
+import TextFieldWidget from '../common/text_field'
+import DatePickerWidget from '../common/date_picker'
 
 function FormIcon() {
     return (
@@ -43,83 +39,6 @@ type ErrorMessageProps = {
 function DisplayErrorMessage(props: ErrorMessageProps) {
     const { isError, errorMessage } = props
     return <Typography>{isError ? errorMessage : ''}</Typography>
-}
-
-type TextFieldProps = {
-    id: string
-    name: string
-    label: string
-    autofocus?: boolean
-    disabled?: boolean
-    value: string
-    errorValue?: boolean
-    onChangeText?: React.ChangeEventHandler<HTMLInputElement>
-    onChangeError?: React.MouseEventHandler<HTMLDivElement>
-}
-
-function TextFieldWidget(props: TextFieldProps) {
-    const {
-        id,
-        name,
-        label,
-        autofocus,
-        disabled,
-        value,
-        errorValue,
-        onChangeText,
-        onChangeError,
-    } = props
-    return (
-        <TextField
-            disabled={disabled ?? false}
-            id={id}
-            name={name}
-            label={label}
-            autoFocus={autofocus ?? false}
-            value={value}
-            onChange={onChangeText}
-            error={errorValue}
-            onClick={onChangeError}
-            required
-            fullWidth
-        />
-    )
-}
-
-type DatePickerProps = {
-    dateError: boolean
-    value?: Date | null
-    onChangeDate?: (
-        value: Dayjs | null,
-        context: PickerChangeHandlerContext<DateValidationError>,
-    ) => void
-    onChangeSelection?: (newValue: FieldSelectedSections) => void
-}
-function DatePickerWidget(props: DatePickerProps) {
-    const { dateError, value, onChangeDate, onChangeSelection } = props
-    return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box
-                width={'100%'}
-                sx={{
-                    border: dateError ? 1 : 0,
-                    borderColor: dateError ? 'red' : '',
-                }}
-            >
-                <DatePicker
-                    label="Date"
-                    sx={{
-                        backgroundColor: (theme) => theme.palette.grey[200],
-                        width: '100%',
-                    }}
-                    format="MM-D-YYYY"
-                    value={value ? dayjs(value) : null}
-                    onChange={onChangeDate}
-                    onSelectedSectionsChange={onChangeSelection}
-                />
-            </Box>
-        </LocalizationProvider>
-    )
 }
 
 function AddEventButton({ buttonName }: { buttonName: string }) {
@@ -167,7 +86,6 @@ function AddEditEventWidget(props: AddEditEventProps) {
     const [fetchErrorMessage, setFetchErrorMessage] = useState<string>('')
 
     const callEndPoint = async (data: Events) => {
-        console.log(data)
         try {
             if (props.isEdit) {
                 await editEvent(data).unwrap()
@@ -294,7 +212,6 @@ function AddEditEventWidget(props: AddEditEventProps) {
                         <Grid item xs={12} sm={6}>
                             <TextFieldWidget
                                 name="firstName"
-                                id="firstName"
                                 label="First Name"
                                 autofocus={true}
                                 value={eventFormData.firstName}
@@ -316,7 +233,6 @@ function AddEditEventWidget(props: AddEditEventProps) {
 
                         <Grid item xs={12} sm={6}>
                             <TextFieldWidget
-                                id="lastName"
                                 name="lastName"
                                 label="Last Name"
                                 value={eventFormData.lastName}
@@ -355,7 +271,6 @@ function AddEditEventWidget(props: AddEditEventProps) {
 
                         <Grid item xs={12} sm={7}>
                             <TextFieldWidget
-                                id="event-type"
                                 name="eventType"
                                 label="Type event name"
                                 value={eventFormData.eventType}

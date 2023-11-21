@@ -6,14 +6,6 @@ export type Events = {
     eventDate: Date
 }
 
-// export type PostEvents = {
-//     eventId?: number
-//     firstName: string
-//     lastName: string
-//     eventType: string
-//     eventDate: Date
-// }
-
 export type ErrorResponse = {
     error: string
     status: string
