@@ -6,6 +6,7 @@ const name = 'events'
 const initialState = {
     drawerState: false,
 }
+
 export const eventSlice = createSlice({
     name: name,
     initialState: initialState,

@@ -29,10 +29,12 @@ function SelectDropDown(props: SelectDropDownProps) {
         <FormControl fullWidth sx={{ minWidth: 120 }} error={errorValue}>
             <InputLabel id={selectLabel}>{selectLabel}</InputLabel>
             <Select
+                name={selectLabel}
+                aria-label={selectLabel}
                 labelId={selectLabel}
                 id={selectLabel}
-                value={selectValue}
                 label={selectLabel}
+                value={selectValue}
                 onChange={selectOnChange}
                 onClick={selectOnClick}
                 onClose={selectOnClick}

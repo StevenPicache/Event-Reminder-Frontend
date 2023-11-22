@@ -1,11 +1,11 @@
-import { ErrorResponse, GetEvents, PostEvents } from '../../types/event'
+import { ErrorResponse, Events } from '../../types/event'
 import { eventsApi } from '../api/event'
 
 const PATH_API_EVENTS = 'events/v0/events'
 
 export const eventEndpoints = eventsApi.injectEndpoints({
     endpoints: (build) => ({
-        getEvents: build.query<GetEvents[], void>({
+        getEvents: build.query<Events[], void>({
             query() {
                 return {
                     url: PATH_API_EVENTS,
@@ -15,7 +15,27 @@ export const eventEndpoints = eventsApi.injectEndpoints({
             providesTags: ['Events'],
         }),
 
-        addEvents: build.mutation<ErrorResponse, PostEvents>({
+        searchEvents: build.query<Events[], string>({
+            query(searchText) {
+                return {
+                    url: `${PATH_API_EVENTS}/${searchText}`,
+                    method: 'GET',
+                }
+            },
+            providesTags: ['Events'],
+        }),
+
+        weekRangeEvents: build.query<Events[], number>({
+            query(range) {
+                return {
+                    url: `${PATH_API_EVENTS}/range/${range}`,
+                    method: 'GET',
+                }
+            },
+            providesTags: ['Events'],
+        }),
+
+        addEvents: build.mutation<ErrorResponse, Events>({
             query(body) {
                 return {
                     url: PATH_API_EVENTS,
@@ -26,33 +46,37 @@ export const eventEndpoints = eventsApi.injectEndpoints({
             invalidatesTags: ['Events'],
         }),
 
-        searchEvents: build.query<GetEvents[], string>({
-            query(searchText) {
+        deleteEvent: build.mutation<{ success: boolean; id: number }, number>({
+            query(id) {
                 return {
-                    url: `${PATH_API_EVENTS}/${searchText}`,
-                    method: 'GET',
+                    url: `${PATH_API_EVENTS}/delete/${id}`,
+                    method: 'DELETE',
                 }
             },
-            providesTags: ['Events'],
+            invalidatesTags: ['Events'],
         }),
 
-        weekRangeEvents: build.query<GetEvents[], number>({
-            query(range) {
+        editEvent: build.mutation<void, Events>({
+            query(body) {
+                const { eventId } = body
                 return {
-                    url: `${PATH_API_EVENTS}/range/${range}`,
-                    method: 'GET',
+                    url: `${PATH_API_EVENTS}/edit/${eventId}`,
+                    method: 'PUT',
+                    body: { ...body },
                 }
             },
-            providesTags: ['Events'],
+            invalidatesTags: ['Events'],
         }),
     }),
 })
 
 export const {
     useGetEventsQuery,
-    useAddEventsMutation,
     useSearchEventsQuery,
     useWeekRangeEventsQuery,
+    useAddEventsMutation,
+    useDeleteEventMutation,
+    useEditEventMutation,
 } = eventEndpoints
 export const {
     endpoints: { getEvents },

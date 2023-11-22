@@ -1,11 +1,5 @@
-export type GetEvents = {
-    eventId: number
-    name: string
-    eventDate: Date
-    eventType: string
-}
-
-export type PostEvents = {
+export type Events = {
+    eventId?: number
     firstName: string
     lastName: string
     eventType: string
@@ -15,4 +9,21 @@ export type PostEvents = {
 export type ErrorResponse = {
     error: string
     status: string
+}
+
+export type EventFormData = {
+    eventId?: number
+    firstName: string
+    lastName: string
+    eventSelectType: string
+    eventType: string
+    eventDate?: Date | null
+}
+
+export type EventFormErrorState = {
+    firstNameError: boolean
+    lastNameError: boolean
+    eventSelectTypeError: boolean
+    eventTypeError: boolean
+    eventDateError: boolean
 }
