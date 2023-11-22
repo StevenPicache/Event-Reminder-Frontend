@@ -1,17 +1,17 @@
 # Event-Reminder
 
-# Status - Work-in-progress
-
 ## Purpose
+
 Show understanding of React, Redux Toolkit and learn RTK Query.
 
 ## Features
 
-- Add event
-- Event Table with Sorting
-- Search Event by names and event type
-- Search Event by week range
-
+-   Add event
+-   Event Table with Sorting
+-   Search Event by names and event type
+-   Search Event by week range
+-   Update event
+-   Delete event
 
 ## Tech Stack
 
@@ -28,8 +28,6 @@ Show understanding of React, Redux Toolkit and learn RTK Query.
 [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
 
 ## Installation
-
-Install my-project with npm
 
 ```bash
   git clone https://github.com/StevenPicache/Event-Reminder-Frontend.git
