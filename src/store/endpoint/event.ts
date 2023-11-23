@@ -5,30 +5,12 @@ const PATH_API_EVENTS = 'events/v0/events'
 
 export const eventEndpoints = eventsApi.injectEndpoints({
     endpoints: (build) => ({
-        getEvents: build.query<Events[], void>({
-            query() {
+        getEvents: build.query<Events[], { search?: string; range?: string }>({
+            query(args) {
+                const { search, range } = args
                 return {
                     url: PATH_API_EVENTS,
-                    method: 'GET',
-                }
-            },
-            providesTags: ['Events'],
-        }),
-
-        searchEvents: build.query<Events[], string>({
-            query(searchText) {
-                return {
-                    url: `${PATH_API_EVENTS}/${searchText}`,
-                    method: 'GET',
-                }
-            },
-            providesTags: ['Events'],
-        }),
-
-        weekRangeEvents: build.query<Events[], number>({
-            query(range) {
-                return {
-                    url: `${PATH_API_EVENTS}/range/${range}`,
+                    params: { search, range },
                     method: 'GET',
                 }
             },
@@ -72,12 +54,7 @@ export const eventEndpoints = eventsApi.injectEndpoints({
 
 export const {
     useGetEventsQuery,
-    useSearchEventsQuery,
-    useWeekRangeEventsQuery,
     useAddEventsMutation,
     useDeleteEventMutation,
     useEditEventMutation,
-} = eventEndpoints
-export const {
-    endpoints: { getEvents },
 } = eventEndpoints
