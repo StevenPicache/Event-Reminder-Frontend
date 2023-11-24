@@ -10,6 +10,7 @@ Show understanding of React, Redux Toolkit and learn RTK Query.
 -   Event Table with Sorting
 -   Search Event by names and event type
 -   Search Event by week range
+-   Search both by names and week range
 -   Update event
 -   Delete event
 
