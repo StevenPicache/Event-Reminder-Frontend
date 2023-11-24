@@ -13,15 +13,13 @@ import {
 } from '@mui/material'
 import { Main } from '../constants/drawerStyles'
 import { useAppSelector } from '../hooks'
-import {
-    useWeekRangeEventsQuery,
-    useSearchEventsQuery,
-} from '../store/endpoint/event'
+
 import { debounce } from 'lodash'
 import { TableWidget } from './Table'
 import { debounceTime } from '../constants/constants'
 import { SearchBar } from './SearchBar'
 import SelectDropDown from '../common/select_dropdown'
+import { useGetEventsQuery } from '../store/endpoint/event'
 
 function Copyright() {
     return (
@@ -63,12 +61,12 @@ function EventsWidget() {
         '4 weeks',
         '8 weeks',
         '16 weeks',
+        '32 weeks',
     ]
 
     let tableContent = null
 
     const [searchTerm, setSearchTerm] = useState<string>('')
-    const [disableSearchBar, setDisableSearchBar] = useState<boolean>(false)
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('')
     const debouncedSearch = useMemo(
         () =>
@@ -96,32 +94,26 @@ function EventsWidget() {
 
     const handleSelectDropDownOnChange = (e: SelectChangeEvent<string>) => {
         if (e.target.value === 'None') {
-            setDisableSearchBar(false) /// coupled here
             setDropDownValue('')
         } else {
             setDropDownValue(e.target.value)
-            clearTextField() /// coupled here
-            setDisableSearchBar(true) /// coupled here
         }
     }
 
-    const { data: searchBarData = [], isError: allDataError } =
-        useSearchEventsQuery(debouncedSearchTerm)
+    const { data, isSuccess, isError } = useGetEventsQuery({
+        search: debouncedSearchTerm ?? undefined,
+        range: dropDownValue ?? undefined,
+    })
 
-    const { data: dropDownData = [], isError: weekRangeError } =
-        useWeekRangeEventsQuery(parseInt(dropDownValue))
-
-    const tableData = dropDownData.length !== 0 ? dropDownData : searchBarData
-
-    if (allDataError || weekRangeError) {
+    if (isError) {
         tableContent = (
             <DisplayEmptyTable
                 label={'An error as has occured when trying to fetch data'}
             />
         )
-    } else {
-        if (tableData.length > 0) {
-            tableContent = <TableWidget data={tableData} />
+    } else if (isSuccess) {
+        if (data.length > 0) {
+            tableContent = <TableWidget data={data} />
         } else {
             tableContent = <DisplayEmptyTable label={'No data found '} />
         }
@@ -139,7 +131,6 @@ function EventsWidget() {
                 <Box sx={{ width: '70%', mr: 2 }}>
                     <SearchBar
                         searchTerm={searchTerm}
-                        disable={disableSearchBar}
                         searchOnChange={searchOnChange}
                         clearTextField={clearTextField}
                     />
