@@ -19,12 +19,6 @@ import { TableWidget } from './Table'
 import { debounceTime } from '../constants/constants'
 import { SearchBar } from './SearchBar'
 import SelectDropDown from '../common/select_dropdown'
-
-// import {
-//     useWeekRangeEventsQuery,
-//     useSearchEventsQuery,
-// } from '../store/endpoint/event'
-
 import { useGetEventsQuery } from '../store/endpoint/event'
 
 function Copyright() {
@@ -67,12 +61,12 @@ function EventsWidget() {
         '4 weeks',
         '8 weeks',
         '16 weeks',
+        '32 weeks',
     ]
 
     let tableContent = null
 
     const [searchTerm, setSearchTerm] = useState<string>('')
-    const [disableSearchBar, setDisableSearchBar] = useState<boolean>(false)
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('')
     const debouncedSearch = useMemo(
         () =>
@@ -100,12 +94,9 @@ function EventsWidget() {
 
     const handleSelectDropDownOnChange = (e: SelectChangeEvent<string>) => {
         if (e.target.value === 'None') {
-            setDisableSearchBar(false)
             setDropDownValue('')
         } else {
             setDropDownValue(e.target.value)
-            clearTextField()
-            setDisableSearchBar(true)
         }
     }
 
@@ -140,7 +131,6 @@ function EventsWidget() {
                 <Box sx={{ width: '70%', mr: 2 }}>
                     <SearchBar
                         searchTerm={searchTerm}
-                        disable={disableSearchBar}
                         searchOnChange={searchOnChange}
                         clearTextField={clearTextField}
                     />

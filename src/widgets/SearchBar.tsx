@@ -10,12 +10,11 @@ import {
 
 type EventSearchBar = {
     searchTerm: string
-    disable?: boolean
     searchOnChange?: React.ChangeEventHandler<HTMLInputElement>
     clearTextField?: React.MouseEventHandler<HTMLButtonElement>
 }
 export function SearchBar(props: EventSearchBar) {
-    const { searchTerm, disable, searchOnChange, clearTextField } = props
+    const { searchTerm, searchOnChange, clearTextField } = props
     return (
         <FormControl
             variant="filled"
@@ -27,7 +26,6 @@ export function SearchBar(props: EventSearchBar) {
         >
             <OutlinedInput
                 autoFocus
-                disabled={disable}
                 placeholder="Search Event"
                 value={searchTerm}
                 onChange={searchOnChange}
